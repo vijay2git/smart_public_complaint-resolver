@@ -4,28 +4,25 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AnimatedCard, AnimatedSection, GlowButton, FloatingIcon } from '@/components/ui/animated';
+import { AnimatedCard, AnimatedSection, GlowButton } from '@/components/ui/animated';
 import { 
   AlertCircle, 
   ArrowLeft, 
   Camera, 
   MapPin, 
   Mic, 
-  MicOff,
   Send,
   Loader2,
   CheckCircle,
-  AlertTriangle,
   Sparkles,
   ChevronRight,
   ChevronLeft,
-  ImageIcon,
   FileText,
   StopCircle
 } from 'lucide-react';
 
 const categories = [
-  { value: 'pothole', label: 'Pothole/Road', icon: '🕳️' },
+  { value: 'pothole', label: 'Road Damage', icon: '🕳️' },
   { value: 'water_leak', label: 'Water Leak', icon: '💧' },
   { value: 'streetlight', label: 'Streetlight', icon: '💡' },
   { value: 'trash', label: 'Waste', icon: '🗑️' },
@@ -37,10 +34,10 @@ const categories = [
 ];
 
 const steps = [
-  { id: 1, title: 'Details', icon: FileText },
-  { id: 2, title: 'Category', icon: AlertCircle },
-  { id: 3, title: 'Media', icon: ImageIcon },
-  { id: 4, title: 'Review', icon: Sparkles },
+  { id: 1, title: 'Details' },
+  { id: 2, title: 'Category' },
+  { id: 3, title: 'Media' },
+  { id: 4, title: 'Review' },
 ];
 
 export default function SubmitComplaint() {
@@ -68,12 +65,7 @@ export default function SubmitComplaint() {
   const getLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-        },
+        (position) => setLocation({ latitude: position.coords.latitude, longitude: position.coords.longitude }),
         (error) => console.error('Location error:', error)
       );
     }
@@ -87,14 +79,11 @@ export default function SubmitComplaint() {
       audioChunksRef.current = [];
 
       mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
+        if (event.data.size > 0) audioChunksRef.current.push(event.data);
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
-        setAudioBlob(audioBlob);
+        setAudioBlob(new Blob(audioChunksRef.current, { type: 'audio/wav' }));
         stream.getTracks().forEach(track => track.stop());
       };
 
@@ -114,15 +103,8 @@ export default function SubmitComplaint() {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
-      if (recordingIntervalRef.current) {
-        clearInterval(recordingIntervalRef.current);
-      }
+      if (recordingIntervalRef.current) clearInterval(recordingIntervalRef.current);
     }
-  };
-
-  const deleteRecording = () => {
-    setAudioBlob(null);
-    setRecordingTime(0);
   };
 
   const formatTime = (seconds: number) => {
@@ -142,10 +124,7 @@ export default function SubmitComplaint() {
       const response = await fetch('/api/ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'analyze_complaint',
-          data: { title, description, location },
-        }),
+        body: JSON.stringify({ action: 'analyze_complaint', data: { title, description, location } }),
       });
 
       if (!response.ok) throw new Error('Analysis failed');
@@ -153,13 +132,10 @@ export default function SubmitComplaint() {
       const result = await response.json();
       if (result.success) {
         setAiAnalysis(result.data.classification);
-        if (result.data.duplicates?.isDuplicate) {
-          setDuplicateWarning(result.data.duplicates);
-        }
+        if (result.data.duplicates?.isDuplicate) setDuplicateWarning(result.data.duplicates);
         setCurrentStep(4);
       }
     } catch (error) {
-      console.error('Analysis error:', error);
       setAiAnalysis({ category: selectedCategory || 'other', severity: 'medium', confidence: 0.85 });
       setCurrentStep(4);
     } finally {
@@ -170,27 +146,18 @@ export default function SubmitComplaint() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!title || title.length < 10) {
-      alert('Title must be at least 10 characters.');
-      setCurrentStep(1);
-      return;
-    }
-    
-    if (!description || description.length < 50) {
-      alert('Description must be at least 50 characters.');
-      setCurrentStep(1);
-      return;
-    }
+    if (!title || title.length < 10) { alert('Title must be at least 10 characters.'); setCurrentStep(1); return; }
+    if (!description || description.length < 50) { alert('Description must be at least 50 characters.'); setCurrentStep(1); return; }
 
     setIsSubmitting(true);
     
     try {
-      const userId = 'demo-user-' + Date.now();
       const response = await fetch('/api/complaints', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title, description, category: selectedCategory, location, userId,
+          title, description, category: selectedCategory, location,
+          userId: 'demo-user-' + Date.now(),
         }),
       });
 
@@ -207,71 +174,63 @@ export default function SubmitComplaint() {
 
   const nextStep = () => {
     if (currentStep === 1) {
-      if (!title || title.length < 10) {
-        alert('Title must be at least 10 characters.');
-        return;
-      }
-      if (!description || description.length < 50) {
-        alert('Description must be at least 50 characters.');
-        return;
-      }
+      if (!title || title.length < 10) { alert('Title must be at least 10 characters.'); return; }
+      if (!description || description.length < 50) { alert('Description must be at least 50 characters.'); return; }
     }
     if (currentStep < 4) setCurrentStep(currentStep + 1);
   };
 
-  const prevStep = () => {
-    if (currentStep > 1) setCurrentStep(currentStep - 1);
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#0A0A0A] relative">
+      {/* Blue Glow */}
+      <div className="blue-glow" />
+      <div className="retro-grid opacity-20" />
+
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
-        <div className="max-w-3xl mx-auto px-4 py-3">
-          <Link href="/" className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors">
+      <header className="relative z-10 border-b border-white/5">
+        <div className="max-w-4xl mx-auto px-6 py-4">
+          <Link href="/" className="inline-flex items-center text-gray-400 hover:text-white transition-colors">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            <span className="text-sm">Back</span>
+            <span className="text-xs tracking-[0.1em] uppercase">Back</span>
           </Link>
         </div>
       </header>
 
-      <div className="max-w-3xl mx-auto px-4 py-8">
+      <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
         {/* Title */}
-        <AnimatedSection delay={0.1} className="text-center mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+        <AnimatedSection delay={0.1} className="text-center mb-12">
+          <h1 className="text-3xl md:text-4xl text-white mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>
             Submit a Complaint
           </h1>
-          <p className="text-gray-500">
-            Report an issue and our AI will analyze it
-          </p>
+          <div className="w-16 h-px bg-blue-500 mx-auto" />
         </AnimatedSection>
 
         {/* Progress Steps */}
-        <AnimatedSection delay={0.2} className="mb-8">
+        <AnimatedSection delay={0.2} className="mb-12">
           <div className="flex items-center justify-center">
             {steps.map((step, index) => (
               <div key={step.id} className="flex items-center">
                 <motion.button
                   onClick={() => step.id < currentStep && setCurrentStep(step.id)}
                   animate={{
-                    scale: currentStep === step.id ? 1.1 : 1,
-                    backgroundColor: currentStep >= step.id ? '#E60023' : '#F3F4F6',
+                    backgroundColor: currentStep >= step.id ? 'rgba(59, 130, 246, 0.2)' : 'transparent',
+                    borderColor: currentStep >= step.id ? '#3B82F6' : '#2A2A2A',
                   }}
                   className={`
-                    w-10 h-10 rounded-full flex items-center justify-center transition-all
-                    ${currentStep >= step.id ? 'text-white' : 'text-gray-400'}
+                    w-10 h-10 rounded border flex items-center justify-center transition-all
+                    ${currentStep >= step.id ? 'text-blue-400' : 'text-gray-600'}
                   `}
                 >
-                  <step.icon className="w-4 h-4" />
+                  <span className="text-xs">{String(step.id).padStart(2, '0')}</span>
                 </motion.button>
                 {index < steps.length - 1 && (
-                  <div className={`w-12 h-0.5 mx-2 ${currentStep > step.id ? 'bg-[#E60023]' : 'bg-gray-200'}`} />
+                  <div className={`w-16 h-px mx-3 ${currentStep > step.id ? 'bg-blue-500' : 'bg-white/10'}`} />
                 )}
               </div>
             ))}
           </div>
-          <p className="text-center text-sm text-gray-500 mt-3">
-            Step {currentStep} of 4: <span className="text-[#E60023] font-medium">{steps[currentStep - 1].title}</span>
+          <p className="text-center text-xs text-gray-500 mt-4 tracking-[0.1em] uppercase">
+            Step {currentStep}: {steps[currentStep - 1].title}
           </p>
         </AnimatedSection>
 
@@ -284,53 +243,54 @@ export default function SubmitComplaint() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
               >
-                <AnimatedCard className="space-y-6">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
-                      <FileText className="w-5 h-5 text-blue-600" />
+                <div className="glass-card p-8">
+                  <div className="flex items-center space-x-4 mb-8">
+                    <div className="w-12 h-12 border border-blue-500/30 rounded flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-blue-400" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-semibold text-gray-900">Complaint Details</h2>
-                      <p className="text-sm text-gray-500">Provide a clear title and description</p>
+                      <h2 className="text-xl text-white" style={{ fontFamily: 'Playfair Display, serif' }}>Issue Details</h2>
+                      <p className="text-sm text-gray-500">Provide a clear description of the problem</p>
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Title * <span className="text-gray-400">({title.length}/100)</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      className="glass-input"
-                      placeholder="Brief summary (e.g., Large pothole on Main Street)"
-                      maxLength={100}
-                    />
-                    {title.length > 0 && title.length < 10 && (
-                      <p className="text-[#E60023] text-sm mt-1">{10 - title.length} more characters needed</p>
-                    )}
-                  </div>
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-xs tracking-[0.1em] text-gray-400 uppercase mb-3">
+                        Title * <span className="text-gray-600">({title.length}/100)</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        className="glass-input"
+                        placeholder="Brief summary of the issue"
+                        maxLength={100}
+                      />
+                      {title.length > 0 && title.length < 10 && (
+                        <p className="text-blue-400 text-xs mt-2">{10 - title.length} more characters required</p>
+                      )}
+                    </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Description * <span className="text-gray-400">({description.length}/2000)</span>
-                    </label>
-                    <textarea
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      rows={5}
-                      className="glass-input resize-none"
-                      placeholder="Provide details including exact location, when you noticed it, and any safety concerns..."
-                      maxLength={2000}
-                    />
-                    {description.length > 0 && description.length < 50 && (
-                      <p className="text-[#E60023] text-sm mt-1">{50 - description.length} more characters needed</p>
-                    )}
+                    <div>
+                      <label className="block text-xs tracking-[0.1em] text-gray-400 uppercase mb-3">
+                        Description * <span className="text-gray-600">({description.length}/2000)</span>
+                      </label>
+                      <textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        rows={6}
+                        className="glass-input resize-none"
+                        placeholder="Provide detailed information including exact location, when you noticed it, and any safety concerns..."
+                        maxLength={2000}
+                      />
+                      {description.length > 0 && description.length < 50 && (
+                        <p className="text-blue-400 text-xs mt-2">{50 - description.length} more characters required</p>
+                      )}
+                    </div>
                   </div>
-                </AnimatedCard>
+                </div>
               </motion.div>
             )}
 
@@ -341,42 +301,41 @@ export default function SubmitComplaint() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
               >
-                <AnimatedCard>
-                  <div className="flex items-center space-x-3 mb-6">
-                    <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
-                      <AlertCircle className="w-5 h-5 text-purple-600" />
+                <div className="glass-card p-8">
+                  <div className="flex items-center space-x-4 mb-8">
+                    <div className="w-12 h-12 border border-blue-500/30 rounded flex items-center justify-center">
+                      <AlertCircle className="w-5 h-5 text-blue-400" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-semibold text-gray-900">Select Category</h2>
-                      <p className="text-sm text-gray-500">Choose the most relevant category</p>
+                      <h2 className="text-xl text-white" style={{ fontFamily: 'Playfair Display, serif' }}>Select Category</h2>
+                      <p className="text-sm text-gray-500">Choose the most appropriate classification</p>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {categories.map((cat) => (
                       <motion.button
                         key={cat.value}
                         type="button"
-                        whileHover={{ scale: 1.02 }}
+                        whileHover={{ scale: 1.02, borderColor: 'rgba(59, 130, 246, 0.5)' }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setSelectedCategory(cat.value)}
                         className={`
-                          relative flex flex-col items-center p-4 rounded-2xl cursor-pointer border-2 transition-all
+                          relative flex flex-col items-center p-6 rounded border transition-all
                           ${selectedCategory === cat.value 
-                            ? 'border-[#E60023] bg-red-50' 
-                            : 'border-gray-200 hover:border-gray-300'
+                            ? 'border-blue-500 bg-blue-500/10' 
+                            : 'border-white/10 bg-white/[0.02]'
                           }
                         `}
                       >
-                        <span className="text-2xl mb-2">{cat.icon}</span>
-                        <span className="text-sm text-gray-700">{cat.label}</span>
+                        <span className="text-2xl mb-3">{cat.icon}</span>
+                        <span className="text-sm text-gray-300">{cat.label}</span>
                         {selectedCategory === cat.value && (
                           <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            className="absolute top-2 right-2 w-5 h-5 bg-[#E60023] rounded-full flex items-center justify-center"
+                            className="absolute top-2 right-2 w-5 h-5 bg-blue-500 rounded flex items-center justify-center"
                           >
                             <CheckCircle className="w-3 h-3 text-white" />
                           </motion.div>
@@ -384,7 +343,7 @@ export default function SubmitComplaint() {
                       </motion.button>
                     ))}
                   </div>
-                </AnimatedCard>
+                </div>
               </motion.div>
             )}
 
@@ -395,99 +354,93 @@ export default function SubmitComplaint() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
               >
-                <AnimatedCard className="space-y-6">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
-                      <Camera className="w-5 h-5 text-green-600" />
+                <div className="glass-card p-8">
+                  <div className="flex items-center space-x-4 mb-8">
+                    <div className="w-12 h-12 border border-blue-500/30 rounded flex items-center justify-center">
+                      <Camera className="w-5 h-5 text-blue-400" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-semibold text-gray-900">Location & Media</h2>
+                      <h2 className="text-xl text-white" style={{ fontFamily: 'Playfair Display, serif' }}>Location & Media</h2>
                       <p className="text-sm text-gray-500">Add supporting evidence (optional)</p>
                     </div>
                   </div>
 
-                  {/* Location */}
-                  <div className="flex items-center space-x-3">
-                    <motion.button
-                      type="button"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={getLocation}
-                      className="glass-btn-secondary flex items-center space-x-2"
-                    >
-                      <MapPin className="w-4 h-4" />
-                      <span>{location ? 'Location Added' : 'Add Location'}</span>
-                    </motion.button>
-                    {location && (
-                      <span className="text-green-600 text-sm flex items-center">
-                        <CheckCircle className="w-4 h-4 mr-1" /> Captured
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Image Upload */}
-                  <div className="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center hover:border-[#E60023]/30 transition-colors">
-                    <Camera className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-                    <p className="text-gray-600 mb-1">Drag and drop photos here</p>
-                    <p className="text-gray-400 text-sm mb-3">PNG, JPG up to 5MB each</p>
-                    <label className="glass-btn-secondary cursor-pointer inline-block text-sm">
-                      <span>Browse Files</span>
-                      <input type="file" accept="image/*" multiple className="hidden" />
-                    </label>
-                  </div>
-
-                  {/* Voice Recording */}
-                  <div className="flex items-center space-x-3">
-                    {!isRecording && !audioBlob ? (
+                  <div className="space-y-6">
+                    {/* Location */}
+                    <div className="flex items-center space-x-4">
                       <motion.button
                         type="button"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={startRecording}
+                        onClick={getLocation}
                         className="glass-btn-secondary flex items-center space-x-2"
                       >
-                        <Mic className="w-4 h-4" />
-                        <span>Record Voice Note</span>
+                        <MapPin className="w-4 h-4" />
+                        <span>{location ? 'Location Added' : 'Add Location'}</span>
                       </motion.button>
-                    ) : isRecording ? (
-                      <div className="flex items-center space-x-3">
+                      {location && (
+                        <span className="text-blue-400 text-sm flex items-center">
+                          <CheckCircle className="w-4 h-4 mr-1" /> Captured
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Image Upload */}
+                    <div className="border border-dashed border-white/10 rounded p-8 text-center hover:border-blue-500/30 transition-colors">
+                      <Camera className="w-10 h-10 text-gray-600 mx-auto mb-3" />
+                      <p className="text-gray-400 mb-2">Drop photos here or click to upload</p>
+                      <p className="text-gray-600 text-xs">PNG, JPG up to 5MB</p>
+                      <input type="file" accept="image/*" multiple className="hidden" />
+                    </div>
+
+                    {/* Voice Recording */}
+                    <div className="flex items-center space-x-4">
+                      {!isRecording && !audioBlob ? (
                         <motion.button
                           type="button"
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
-                          onClick={stopRecording}
-                          className="glass-btn flex items-center space-x-2"
+                          onClick={startRecording}
+                          className="glass-btn-secondary flex items-center space-x-2"
                         >
-                          <StopCircle className="w-4 h-4" />
-                          <span>Stop</span>
+                          <Mic className="w-4 h-4" />
+                          <span>Record Voice</span>
                         </motion.button>
-                        <span className="text-[#E60023] font-mono text-sm">{formatTime(recordingTime)}</span>
-                        <motion.div
-                          animate={{ opacity: [1, 0.5, 1] }}
-                          transition={{ duration: 1, repeat: Infinity }}
-                          className="w-2 h-2 bg-[#E60023] rounded-full"
-                        />
-                      </div>
-                    ) : (
-                      <div className="flex items-center space-x-3">
-                        <span className="text-green-600 text-sm flex items-center">
-                          <CheckCircle className="w-4 h-4 mr-1" />
-                          Saved ({formatTime(recordingTime)})
-                        </span>
-                        <button
-                          type="button"
-                          onClick={deleteRecording}
-                          className="text-[#E60023] text-sm hover:underline"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    )}
-                    <span className="text-gray-400 text-sm">Optional</span>
+                      ) : isRecording ? (
+                        <div className="flex items-center space-x-4">
+                          <motion.button
+                            type="button"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={stopRecording}
+                            className="glass-btn flex items-center space-x-2 !border-red-500 !text-red-400"
+                          >
+                            <StopCircle className="w-4 h-4" />
+                            <span>Stop</span>
+                          </motion.button>
+                          <span className="text-red-400 font-mono text-sm">{formatTime(recordingTime)}</span>
+                          <motion.div
+                            animate={{ opacity: [1, 0.5, 1] }}
+                            transition={{ duration: 1, repeat: Infinity }}
+                            className="w-2 h-2 bg-red-500 rounded-full"
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex items-center space-x-4">
+                          <span className="text-blue-400 text-sm flex items-center">
+                            <CheckCircle className="w-4 h-4 mr-1" />
+                            Recorded ({formatTime(recordingTime)})
+                          </span>
+                          <button type="button" onClick={() => { setAudioBlob(null); setRecordingTime(0); }} className="text-red-400 text-xs hover:underline">
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                      <span className="text-gray-600 text-xs">Optional</span>
+                    </div>
                   </div>
-                </AnimatedCard>
+                </div>
               </motion.div>
             )}
 
@@ -498,71 +451,66 @@ export default function SubmitComplaint() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
                 className="space-y-4"
               >
-                <AnimatedCard>
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-[#E60023]/10 flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 text-[#E60023]" />
+                <div className="glass-card p-8">
+                  <div className="flex items-center space-x-4 mb-8">
+                    <div className="w-12 h-12 border border-blue-500/30 rounded flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-blue-400" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-semibold text-gray-900">Review & Submit</h2>
+                      <h2 className="text-xl text-white" style={{ fontFamily: 'Playfair Display, serif' }}>Review & Submit</h2>
                       <p className="text-sm text-gray-500">Verify your complaint details</p>
                     </div>
                   </div>
 
-                  <div className="space-y-3">
-                    <div className="p-3 bg-gray-50 rounded-xl">
-                      <p className="text-xs text-gray-500 mb-1">Title</p>
-                      <p className="text-gray-900">{title || 'Not provided'}</p>
+                  <div className="space-y-4">
+                    <div className="p-4 bg-white/[0.02] border border-white/5 rounded">
+                      <p className="text-xs text-gray-500 mb-1 tracking-wide uppercase">Title</p>
+                      <p className="text-white">{title || 'Not provided'}</p>
                     </div>
-                    <div className="p-3 bg-gray-50 rounded-xl">
-                      <p className="text-xs text-gray-500 mb-1">Description</p>
-                      <p className="text-gray-900 text-sm line-clamp-2">{description || 'Not provided'}</p>
+                    <div className="p-4 bg-white/[0.02] border border-white/5 rounded">
+                      <p className="text-xs text-gray-500 mb-1 tracking-wide uppercase">Description</p>
+                      <p className="text-gray-300 text-sm line-clamp-2">{description || 'Not provided'}</p>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="p-3 bg-gray-50 rounded-xl">
-                        <p className="text-xs text-gray-500 mb-1">Category</p>
-                        <p className="text-gray-900 flex items-center">
-                          <span className="mr-1">{categories.find(c => c.value === selectedCategory)?.icon}</span>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-4 bg-white/[0.02] border border-white/5 rounded">
+                        <p className="text-xs text-gray-500 mb-1 tracking-wide uppercase">Category</p>
+                        <p className="text-white flex items-center">
+                          <span className="mr-2">{categories.find(c => c.value === selectedCategory)?.icon}</span>
                           {categories.find(c => c.value === selectedCategory)?.label}
                         </p>
                       </div>
-                      <div className="p-3 bg-gray-50 rounded-xl">
-                        <p className="text-xs text-gray-500 mb-1">Voice Note</p>
-                        <p className="text-gray-900">{audioBlob ? formatTime(recordingTime) : 'Not recorded'}</p>
+                      <div className="p-4 bg-white/[0.02] border border-white/5 rounded">
+                        <p className="text-xs text-gray-500 mb-1 tracking-wide uppercase">Voice Note</p>
+                        <p className="text-white">{audioBlob ? formatTime(recordingTime) : 'Not recorded'}</p>
                       </div>
                     </div>
                   </div>
-                </AnimatedCard>
+                </div>
 
                 {/* AI Analysis */}
                 <AnimatePresence>
                   {aiAnalysis && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                    >
-                      <AnimatedCard className="border-[#E60023]/20 bg-red-50/50">
-                        <div className="flex items-center space-x-2 mb-3">
-                          <Sparkles className="w-4 h-4 text-[#E60023]" />
-                          <h3 className="font-medium text-gray-900">AI Analysis</h3>
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                      <div className="border border-blue-500/30 bg-blue-500/5 rounded p-6">
+                        <div className="flex items-center space-x-2 mb-4">
+                          <Sparkles className="w-4 h-4 text-blue-400" />
+                          <h3 className="font-medium text-white text-sm tracking-wide uppercase">AI Analysis</h3>
                         </div>
-                        <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div className="grid grid-cols-2 gap-4 text-sm">
                           <div>
                             <span className="text-gray-500">Category: </span>
-                            <span className="font-medium">{aiAnalysis.category}</span>
+                            <span className="text-white">{aiAnalysis.category}</span>
                           </div>
                           <div>
                             <span className="text-gray-500">Severity: </span>
-                            <span className={`font-medium ${
-                              aiAnalysis.severity === 'critical' ? 'text-red-600' :
-                              aiAnalysis.severity === 'high' ? 'text-orange-600' : 'text-gray-900'
-                            }`}>{aiAnalysis.severity}</span>
+                            <span className={aiAnalysis.severity === 'critical' ? 'text-red-400' : aiAnalysis.severity === 'high' ? 'text-orange-400' : 'text-white'}>
+                              {aiAnalysis.severity}
+                            </span>
                           </div>
                         </div>
-                      </AnimatedCard>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -570,16 +518,16 @@ export default function SubmitComplaint() {
             )}
           </AnimatePresence>
 
-          {/* Navigation Buttons */}
+          {/* Navigation */}
           <motion.div 
-            className="flex justify-between mt-6"
+            className="flex justify-between mt-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
             {currentStep > 1 ? (
-              <GlowButton variant="secondary" onClick={prevStep} type="button">
-                <span className="flex items-center space-x-1">
+              <GlowButton variant="secondary" onClick={() => setCurrentStep(currentStep - 1)} type="button">
+                <span className="flex items-center space-x-2">
                   <ChevronLeft className="w-4 h-4" />
                   <span>Back</span>
                 </span>
@@ -590,7 +538,7 @@ export default function SubmitComplaint() {
               </Link>
             )}
 
-            <div className="flex space-x-2">
+            <div className="flex space-x-3">
               {currentStep === 3 && (
                 <GlowButton 
                   variant="secondary" 
@@ -599,14 +547,14 @@ export default function SubmitComplaint() {
                   disabled={isAnalyzing || !title || title.length < 10 || !description || description.length < 50}
                 >
                   {isAnalyzing ? (
-                    <span className="flex items-center space-x-1">
+                    <span className="flex items-center space-x-2">
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Analyzing...</span>
+                      <span>Analyzing</span>
                     </span>
                   ) : (
-                    <span className="flex items-center space-x-1">
+                    <span className="flex items-center space-x-2">
                       <Sparkles className="w-4 h-4" />
-                      <span>Analyze with AI</span>
+                      <span>Analyze</span>
                     </span>
                   )}
                 </GlowButton>
@@ -614,7 +562,7 @@ export default function SubmitComplaint() {
 
               {currentStep < 4 ? (
                 <GlowButton onClick={nextStep} type="button">
-                  <span className="flex items-center space-x-1">
+                  <span className="flex items-center space-x-2">
                     <span>Continue</span>
                     <ChevronRight className="w-4 h-4" />
                   </span>
@@ -622,12 +570,12 @@ export default function SubmitComplaint() {
               ) : (
                 <GlowButton type="submit" disabled={isSubmitting}>
                   {isSubmitting ? (
-                    <span className="flex items-center space-x-1">
+                    <span className="flex items-center space-x-2">
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Submitting...</span>
+                      <span>Submitting</span>
                     </span>
                   ) : (
-                    <span className="flex items-center space-x-1">
+                    <span className="flex items-center space-x-2">
                       <Send className="w-4 h-4" />
                       <span>Submit</span>
                     </span>

@@ -2,30 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
+
 :root {
-  /* Pinterest-inspired Color Palette */
-  --pin-red: #E60023;
-  --pin-red-dark: #AD081B;
-  --pin-red-light: #FFE0E0;
-  --pin-gray-100: #F5F5F5;
-  --pin-gray-200: #EFEFEF;
-  --pin-gray-300: #CDCDCD;
-  --pin-gray-400: #A8A8A8;
-  --pin-gray-500: #767676;
-  --pin-gray-600: #5F5F5F;
-  --pin-gray-700: #333333;
-  --pin-gray-800: #211922;
-  --pin-black: #111111;
-  --pin-white: #FFFFFF;
+  /* Museum Dark Theme */
+  --museum-black: #0A0A0A;
+  --museum-dark: #111111;
+  --museum-card: #161616;
+  --museum-border: #2A2A2A;
+  --museum-gray: #888888;
+  --museum-light: #CCCCCC;
+  --museum-white: #F5F5F5;
   
-  /* Glassmorphism */
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(0, 0, 0, 0.08);
-  --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  /* Blue Accent */
+  --accent-blue: #3B82F6;
+  --accent-blue-bright: #60A5FA;
+  --accent-blue-glow: rgba(59, 130, 246, 0.3);
+  --accent-blue-dark: #1E40AF;
   
-  /* Background */
-  --bg-primary: #FFFFFF;
-  --bg-secondary: #F5F5F5;
+  /* Status Colors */
+  --status-pending: #F59E0B;
+  --status-progress: #3B82F6;
+  --status-escalated: #EF4444;
+  --status-resolved: #10B981;
 }
 
 @layer base {
@@ -40,241 +39,225 @@
   }
   
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-    background: var(--bg-primary);
+    font-family: 'Inter', sans-serif;
+    background: var(--museum-black);
     min-height: 100vh;
-    color: var(--pin-black);
+    color: var(--museum-light);
     overflow-x: hidden;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--museum-white);
   }
 }
 
 @layer components {
-  /* Clean Card */
+  /* Museum Card */
   .glass-card {
-    background: var(--pin-white);
-    border-radius: 16px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-    border: 1px solid var(--pin-gray-200);
+    background: var(--museum-card);
+    border: 1px solid var(--museum-border);
+    border-radius: 4px;
+    transition: all 0.4s ease;
   }
   
   .glass-card:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-    transform: translateY(-2px);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.1);
   }
   
-  /* Clean Input */
+  /* Museum Input */
   .glass-input {
-    background: var(--pin-white);
-    border: 2px solid var(--pin-gray-200);
-    border-radius: 16px;
-    padding: 12px 16px;
-    color: var(--pin-black);
-    font-size: 15px;
-    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--museum-border);
+    border-radius: 4px;
+    padding: 14px 18px;
+    color: var(--museum-white);
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.3s ease;
     width: 100%;
   }
   
   .glass-input:focus {
     outline: none;
-    border-color: var(--pin-red);
-    box-shadow: 0 0 0 4px var(--pin-red-light);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
   }
   
   .glass-input::placeholder {
-    color: var(--pin-gray-400);
+    color: var(--museum-gray);
   }
   
-  /* Primary Button (Pinterest Red) */
+  /* Primary Button */
   .glass-btn {
-    background: var(--pin-red);
-    border: none;
-    border-radius: 24px;
-    padding: 12px 24px;
-    color: var(--pin-white);
-    font-weight: 600;
-    font-size: 15px;
+    background: transparent;
+    border: 1px solid var(--accent-blue);
+    border-radius: 4px;
+    padding: 12px 28px;
+    color: var(--accent-blue-bright);
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .glass-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent-blue);
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
   
   .glass-btn:hover {
-    background: var(--pin-red-dark);
-    transform: scale(1.02);
+    color: white;
+    box-shadow: 0 0 30px var(--accent-blue-glow);
   }
   
-  .glass-btn:active {
-    transform: scale(0.98);
+  .glass-btn:hover::before {
+    opacity: 1;
+  }
+  
+  .glass-btn span {
+    position: relative;
+    z-index: 1;
   }
   
   /* Secondary Button */
   .glass-btn-secondary {
-    background: var(--pin-gray-200);
-    border: none;
-    border-radius: 24px;
-    padding: 12px 24px;
-    color: var(--pin-black);
-    font-weight: 600;
-    font-size: 15px;
+    background: transparent;
+    border: 1px solid var(--museum-border);
+    border-radius: 4px;
+    padding: 12px 28px;
+    color: var(--museum-light);
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
   }
   
   .glass-btn-secondary:hover {
-    background: var(--pin-gray-300);
+    border-color: var(--museum-gray);
+    color: var(--museum-white);
   }
   
   /* Badge */
   .glass-badge {
-    background: var(--pin-gray-200);
-    border-radius: 16px;
-    padding: 6px 12px;
-    font-size: 12px;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    color: var(--pin-gray-700);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--museum-border);
+    border-radius: 2px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--museum-light);
   }
   
-  /* Status Badges */
-  .badge-pending {
-    background: #FEF3C7;
-    color: #92400E;
-  }
+  /* Status Colors */
+  .status-pending { color: var(--status-pending); border-color: var(--status-pending); }
+  .status-progress { color: var(--status-progress); border-color: var(--status-progress); }
+  .status-escalated { color: var(--status-escalated); border-color: var(--status-escalated); }
+  .status-resolved { color: var(--status-resolved); border-color: var(--status-resolved); }
   
-  .badge-in-progress {
-    background: #DBEAFE;
-    color: #1E40AF;
-  }
-  
-  .badge-escalated {
-    background: #FEE2E2;
-    color: #991B1B;
-  }
-  
-  .badge-resolved {
-    background: #D1FAE5;
-    color: #065F46;
-  }
-  
-  /* Gradient Border */
+  /* Gradient Border Card */
   .gradient-border {
     position: relative;
-    background: var(--pin-white);
-    border-radius: 24px;
-    overflow: hidden;
+    background: var(--museum-card);
+    border-radius: 8px;
   }
   
   .gradient-border::before {
     content: '';
     position: absolute;
-    inset: -2px;
-    background: linear-gradient(45deg, var(--pin-red), #FF6B6B, var(--pin-red));
-    border-radius: 26px;
+    inset: -1px;
+    background: linear-gradient(135deg, var(--accent-blue) 0%, transparent 50%, var(--accent-blue) 100%);
+    border-radius: 9px;
     z-index: -1;
-    animation: gradientMove 3s ease infinite;
-    background-size: 200% 200%;
+    opacity: 0.5;
   }
   
-  @keyframes gradientMove {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+  /* Museum Divider */
+  .retro-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--museum-border), transparent);
+    margin: 40px 0;
   }
   
-  /* Animations */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  .fade-in {
-    animation: fadeIn 0.4s ease-out;
-  }
-  
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  
-  .slide-up {
-    animation: slideUp 0.5s ease-out;
-  }
-  
-  /* Grid Background (subtle) */
+  /* Subtle Grid */
   .retro-grid {
     background-image: 
-      linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
-    background-size: 40px 40px;
+      linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
   }
   
-  /* Noise Overlay (very subtle) */
-  .noise-overlay::after {
-    content: '';
+  /* Blue Glow Background */
+  .blue-glow {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.015;
+    top: -50%;
+    right: -20%;
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, var(--accent-blue-glow) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    animation: pulse-glow 8s ease-in-out infinite;
+  }
+  
+  .blue-glow-bottom {
+    position: fixed;
+    bottom: -50%;
+    left: -20%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
     pointer-events: none;
     z-index: 0;
   }
   
-  /* Divider */
-  .retro-divider {
-    height: 1px;
-    background: var(--pin-gray-200);
-    margin: 24px 0;
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
   }
   
   /* Scrollbar */
   ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
   }
   
   ::-webkit-scrollbar-track {
-    background: var(--pin-gray-100);
+    background: var(--museum-dark);
   }
   
   ::-webkit-scrollbar-thumb {
-    background: var(--pin-gray-300);
-    border-radius: 4px;
+    background: var(--museum-border);
+    border-radius: 3px;
   }
   
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--pin-gray-400);
+    background: var(--accent-blue);
   }
 }
 
 /* Selection */
 ::selection {
-  background: var(--pin-red-light);
-  color: var(--pin-red-dark);
+  background: var(--accent-blue);
+  color: white;
 }
 
-/* Focus visible for accessibility */
+/* Focus */
 :focus-visible {
-  outline: 2px solid var(--pin-red);
+  outline: 1px solid var(--accent-blue);
   outline-offset: 2px;
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-primary: #1A1A1A;
-    --bg-secondary: #2D2D2D;
-    --pin-white: #2D2D2D;
-    --pin-gray-200: #404040;
-    --pin-gray-300: #525252;
-    --pin-gray-400: #737373;
-    --pin-gray-700: #E5E5E5;
-    --pin-black: #FAFAFA;
-  }
 }

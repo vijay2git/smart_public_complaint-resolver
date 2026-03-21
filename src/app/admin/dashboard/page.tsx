@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AnimatedCard, AnimatedSection, GlowButton } from '@/components/ui/animated';
+import { AnimatedSection, GlowButton } from '@/components/ui/animated';
 import { 
   AlertCircle, 
   BarChart3, 
@@ -15,7 +15,6 @@ import {
   Eye,
   Sparkles,
   X,
-  Bell,
   Mail
 } from 'lucide-react';
 import { formatDate, timeAgo, getCategoryIcon } from '@/lib/utils';
@@ -34,12 +33,12 @@ interface Complaint {
   ai_classification?: { confidence: number; keywords: string[] };
 }
 
-const statusConfig: Record<string, { bg: string; color: string; label: string }> = {
-  pending: { bg: 'bg-amber-100', color: 'text-amber-700', label: 'Pending' },
-  in_progress: { bg: 'bg-blue-100', color: 'text-blue-700', label: 'In Progress' },
-  escalated: { bg: 'bg-red-100', color: 'text-red-700', label: 'Escalated' },
-  resolved: { bg: 'bg-green-100', color: 'text-green-700', label: 'Resolved' },
-  closed: { bg: 'bg-gray-100', color: 'text-gray-700', label: 'Closed' },
+const statusConfig: Record<string, { border: string; text: string; label: string }> = {
+  pending: { border: 'border-amber-500/50', text: 'text-amber-400', label: 'Pending' },
+  in_progress: { border: 'border-blue-500/50', text: 'text-blue-400', label: 'In Progress' },
+  escalated: { border: 'border-red-500/50', text: 'text-red-400', label: 'Escalated' },
+  resolved: { border: 'border-green-500/50', text: 'text-green-400', label: 'Resolved' },
+  closed: { border: 'border-gray-500/50', text: 'text-gray-400', label: 'Closed' },
 };
 
 export default function AdminDashboard() {
@@ -94,33 +93,36 @@ export default function AdminDashboard() {
   };
 
   const getPriorityColor = (score: number) => {
-    if (score >= 80) return 'bg-red-500';
-    if (score >= 50) return 'bg-amber-500';
-    return 'bg-green-500';
+    if (score >= 80) return 'text-red-400 border-red-500/30';
+    if (score >= 50) return 'text-amber-400 border-amber-500/30';
+    return 'text-green-400 border-green-500/30';
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#0A0A0A] relative">
+      {/* Blue Glow */}
+      <div className="blue-glow" />
+      <div className="retro-grid opacity-20" />
+
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-3">
+      <header className="relative z-10 border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-full bg-[#E60023] flex items-center justify-center">
-                <AlertCircle className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg font-semibold text-gray-900">Admin Dashboard</h1>
-                <p className="text-sm text-gray-500">Complaint Management</p>
-              </div>
+              <span className="text-lg tracking-[0.2em] text-white" style={{ fontFamily: 'Playfair Display, serif' }}>
+                ADMIN
+              </span>
+              <span className="text-lg tracking-[0.2em] text-blue-400" style={{ fontFamily: 'Playfair Display, serif' }}>
+                DASHBOARD
+              </span>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
               <Link href="/">
-                <GlowButton variant="secondary" className="!px-4 !py-2 text-sm">Home</GlowButton>
+                <GlowButton variant="secondary" className="!px-4 !py-2 text-xs">Home</GlowButton>
               </Link>
-              <GlowButton onClick={fetchComplaints} className="!px-4 !py-2 text-sm">
-                <span className="flex items-center space-x-1">
-                  <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              <GlowButton onClick={fetchComplaints} className="!px-4 !py-2 text-xs">
+                <span className="flex items-center space-x-2">
+                  <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
                   <span>Refresh</span>
                 </span>
               </GlowButton>
@@ -129,31 +131,26 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
         {/* Stats */}
-        <AnimatedSection delay={0.1} className="mb-6">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <AnimatedSection delay={0.1} className="mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             {[
-              { label: 'Total', value: stats.total, icon: BarChart3, color: 'bg-gray-100' },
-              { label: 'Pending', value: stats.pending, icon: Clock, color: 'bg-amber-100' },
-              { label: 'In Progress', value: stats.inProgress, icon: RefreshCw, color: 'bg-blue-100' },
-              { label: 'Escalated', value: stats.escalated, icon: AlertTriangle, color: 'bg-red-100' },
-              { label: 'Resolved', value: stats.resolved, icon: CheckCircle, color: 'bg-green-100' },
+              { label: 'Total', value: stats.total, color: 'border-white/10' },
+              { label: 'Pending', value: stats.pending, color: 'border-amber-500/30' },
+              { label: 'In Progress', value: stats.inProgress, color: 'border-blue-500/30' },
+              { label: 'Escalated', value: stats.escalated, color: 'border-red-500/30' },
+              { label: 'Resolved', value: stats.resolved, color: 'border-green-500/30' },
             ].map((stat, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className="bg-white rounded-2xl p-4 border border-gray-100"
+                className={`bg-white/[0.02] border ${stat.color} rounded p-4`}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-gray-500">{stat.label}</span>
-                  <div className={`w-8 h-8 rounded-lg ${stat.color} flex items-center justify-center`}>
-                    <stat.icon className="w-4 h-4 text-gray-600" />
-                  </div>
-                </div>
-                <span className="text-2xl font-bold text-gray-900">{stat.value}</span>
+                <p className="text-xs text-gray-500 tracking-wide uppercase mb-2">{stat.label}</p>
+                <span className="text-2xl text-white" style={{ fontFamily: 'Playfair Display, serif' }}>{stat.value}</span>
               </motion.div>
             ))}
           </div>
@@ -162,18 +159,18 @@ export default function AdminDashboard() {
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Complaint Queue */}
           <div className="lg:col-span-2">
-            <AnimatedCard delay={0.2}>
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+            <div className="glass-card p-6">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900">Complaint Queue</h2>
-                  <p className="text-sm text-gray-500">{filteredComplaints.length} complaints</p>
+                  <h2 className="text-xl text-white" style={{ fontFamily: 'Playfair Display, serif' }}>Complaint Queue</h2>
+                  <p className="text-sm text-gray-500">{filteredComplaints.length} complaints • Ranked by priority</p>
                 </div>
                 <div className="relative mt-3 md:mt-0">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                   <input
                     type="text"
                     placeholder="Search..."
-                    className="glass-input !py-2 !px-9 text-sm w-full md:w-48"
+                    className="glass-input !py-2 !pl-9 text-sm w-full md:w-48"
                     value={filters.search}
                     onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                   />
@@ -181,26 +178,26 @@ export default function AdminDashboard() {
               </div>
 
               {/* Filters */}
-              <div className="flex gap-2 mb-4">
+              <div className="flex gap-2 mb-6">
                 {['', 'pending', 'in_progress', 'escalated', 'resolved'].map((status) => (
                   <button
                     key={status}
                     onClick={() => setFilters({ ...filters, status })}
-                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                    className={`px-3 py-1 rounded text-xs font-medium tracking-wide uppercase transition-colors ${
                       filters.status === status
-                        ? 'bg-[#E60023] text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                        : 'bg-white/5 text-gray-500 border border-white/5 hover:border-white/20'
                     }`}
                   >
-                    {status ? status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'All'}
+                    {status ? status.replace('_', ' ') : 'All'}
                   </button>
                 ))}
               </div>
 
               {/* List */}
               {loading ? (
-                <div className="text-center py-8">
-                  <RefreshCw className="w-6 h-6 text-[#E60023] animate-spin mx-auto mb-2" />
+                <div className="text-center py-12">
+                  <RefreshCw className="w-6 h-6 text-blue-400 animate-spin mx-auto mb-2" />
                   <p className="text-sm text-gray-500">Loading...</p>
                 </div>
               ) : (
@@ -215,22 +212,22 @@ export default function AdminDashboard() {
                         transition={{ delay: index * 0.03 }}
                         onClick={() => setSelectedComplaint(complaint)}
                         className={`
-                          p-4 rounded-2xl border cursor-pointer transition-all
+                          p-4 rounded border cursor-pointer transition-all
                           ${selectedComplaint?.id === complaint.id 
-                            ? 'border-[#E60023] bg-red-50' 
-                            : 'border-gray-100 hover:border-gray-200 hover:bg-gray-50'
+                            ? 'border-blue-500/50 bg-blue-500/5' 
+                            : 'border-white/5 hover:border-white/10 bg-white/[0.02]'
                           }
                         `}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center space-x-2 mb-1">
-                              <span className="text-xs font-mono text-gray-400">{complaint.id}</span>
-                              <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${status.bg} ${status.color}`}>
+                              <span className="text-xs font-mono text-gray-500">{complaint.id}</span>
+                              <span className={`px-2 py-0.5 border rounded text-xs ${status.border} ${status.text}`}>
                                 {status.label}
                               </span>
                             </div>
-                            <h3 className="font-medium text-gray-900 truncate">{complaint.title}</h3>
+                            <h3 className="text-white truncate">{complaint.title}</h3>
                             <div className="flex items-center space-x-2 mt-1 text-xs text-gray-500">
                               <span>{getCategoryIcon(complaint.category)} {complaint.category.replace('_', ' ')}</span>
                               <span>•</span>
@@ -239,8 +236,8 @@ export default function AdminDashboard() {
                               <span>{timeAgo(complaint.created_at)}</span>
                             </div>
                           </div>
-                          <div className={`w-12 h-12 rounded-xl ${getPriorityColor(complaint.priority_score)} flex items-center justify-center ml-3`}>
-                            <span className="text-sm font-bold text-white">{complaint.priority_score}</span>
+                          <div className={`w-14 h-14 rounded border ${getPriorityColor(complaint.priority_score)} flex items-center justify-center ml-3 bg-white/5`}>
+                            <span className="text-lg font-light text-white">{complaint.priority_score}</span>
                           </div>
                         </div>
                       </motion.div>
@@ -248,7 +245,7 @@ export default function AdminDashboard() {
                   })}
                 </div>
               )}
-            </AnimatedCard>
+            </div>
           </div>
 
           {/* Detail Panel */}
@@ -261,57 +258,57 @@ export default function AdminDashboard() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
                 >
-                  <AnimatedCard>
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-semibold text-gray-900">Details</h3>
+                  <div className="glass-card p-6">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-lg text-white" style={{ fontFamily: 'Playfair Display, serif' }}>Details</h3>
                       <button
                         onClick={() => setSelectedComplaint(null)}
-                        className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200"
+                        className="w-8 h-8 rounded border border-white/10 flex items-center justify-center hover:border-white/20"
                       >
                         <X className="w-4 h-4 text-gray-500" />
                       </button>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       <div>
-                        <h4 className="font-medium text-gray-900 mb-1">{selectedComplaint.title}</h4>
-                        <p className="text-sm text-gray-600">{selectedComplaint.description}</p>
+                        <h4 className="text-white mb-2">{selectedComplaint.title}</h4>
+                        <p className="text-sm text-gray-400">{selectedComplaint.description}</p>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div className="p-2 bg-gray-50 rounded-xl">
-                          <p className="text-xs text-gray-500">Category</p>
-                          <p className="font-medium capitalize">{selectedComplaint.category.replace('_', ' ')}</p>
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div className="p-3 bg-white/[0.02] border border-white/5 rounded">
+                          <p className="text-xs text-gray-500 mb-1">Category</p>
+                          <p className="text-white capitalize">{selectedComplaint.category.replace('_', ' ')}</p>
                         </div>
-                        <div className="p-2 bg-gray-50 rounded-xl">
-                          <p className="text-xs text-gray-500">Severity</p>
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                            selectedComplaint.severity === 'critical' ? 'bg-red-100 text-red-700' :
-                            selectedComplaint.severity === 'high' ? 'bg-orange-100 text-orange-700' :
-                            'bg-gray-100 text-gray-700'
+                        <div className="p-3 bg-white/[0.02] border border-white/5 rounded">
+                          <p className="text-xs text-gray-500 mb-1">Severity</p>
+                          <span className={`px-2 py-0.5 rounded text-xs ${
+                            selectedComplaint.severity === 'critical' ? 'bg-red-500/20 text-red-400' :
+                            selectedComplaint.severity === 'high' ? 'bg-orange-500/20 text-orange-400' :
+                            'bg-gray-500/20 text-gray-400'
                           }`}>
                             {selectedComplaint.severity}
                           </span>
                         </div>
-                        <div className="p-2 bg-gray-50 rounded-xl">
-                          <p className="text-xs text-gray-500">Priority</p>
-                          <p className="text-xl font-bold">{selectedComplaint.priority_score}</p>
+                        <div className="p-3 bg-white/[0.02] border border-white/5 rounded">
+                          <p className="text-xs text-gray-500 mb-1">Priority</p>
+                          <p className="text-xl text-white">{selectedComplaint.priority_score}</p>
                         </div>
-                        <div className="p-2 bg-gray-50 rounded-xl">
-                          <p className="text-xs text-gray-500">Citizen</p>
-                          <p className="font-medium truncate">{selectedComplaint.user.full_name || 'N/A'}</p>
+                        <div className="p-3 bg-white/[0.02] border border-white/5 rounded">
+                          <p className="text-xs text-gray-500 mb-1">Citizen</p>
+                          <p className="text-white truncate">{selectedComplaint.user.full_name || 'N/A'}</p>
                         </div>
                       </div>
 
                       {/* Email Status */}
-                      <div className="p-3 bg-blue-50 border border-blue-100 rounded-xl">
+                      <div className="p-3 border border-blue-500/30 bg-blue-500/5 rounded">
                         <div className="flex items-center space-x-2 mb-1">
-                          <Mail className="w-4 h-4 text-blue-600" />
-                          <p className="text-xs font-medium text-blue-700">Email Notifications</p>
+                          <Mail className="w-4 h-4 text-blue-400" />
+                          <p className="text-xs text-blue-400 tracking-wide uppercase">Email Status</p>
                         </div>
-                        <p className="text-xs text-blue-600">
+                        <p className="text-xs text-gray-400">
                           {selectedComplaint.status === 'pending' ? '✓ Received email sent' :
-                           selectedComplaint.status === 'in_progress' ? '✓ Review & Work Started emails sent' :
+                           selectedComplaint.status === 'in_progress' ? '✓ Review & Work emails sent' :
                            selectedComplaint.status === 'resolved' ? '✓ All emails completed' :
                            'Auto-scheduled'}
                         </p>
@@ -322,34 +319,34 @@ export default function AdminDashboard() {
                         <GlowButton 
                           onClick={() => handleStatusChange(selectedComplaint.id, 'in_progress')}
                           disabled={selectedComplaint.status === 'in_progress' || selectedComplaint.status === 'resolved'}
-                          className="w-full !py-2 text-sm"
+                          className="w-full !py-2 text-xs"
                         >
-                          Start Work (sends email)
+                          Start Work • Sends Email
                         </GlowButton>
                         <GlowButton 
                           variant="secondary"
                           onClick={() => handleStatusChange(selectedComplaint.id, 'resolved')}
                           disabled={selectedComplaint.status === 'resolved'}
-                          className="w-full !py-2 text-sm"
+                          className="w-full !py-2 text-xs"
                         >
-                          Mark Resolved (sends email)
+                          Mark Resolved • Sends Email
                         </GlowButton>
                         <button
                           onClick={() => handleStatusChange(selectedComplaint.id, 'escalated')}
-                          className="w-full py-2 rounded-2xl border-2 border-red-200 text-red-600 hover:bg-red-50 transition-colors text-sm font-medium"
+                          className="w-full py-2 rounded border border-red-500/30 text-red-400 hover:bg-red-500/10 transition-colors text-xs tracking-wide uppercase"
                         >
                           Escalate
                         </button>
                       </div>
                     </div>
-                  </AnimatedCard>
+                  </div>
                 </motion.div>
               ) : (
-                <AnimatedCard className="py-12 text-center">
-                  <Eye className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-                  <h3 className="font-medium text-gray-900 mb-1">Select a Complaint</h3>
-                  <p className="text-sm text-gray-500">Click to view details</p>
-                </AnimatedCard>
+                <div className="glass-card py-16 text-center">
+                  <Eye className="w-10 h-10 text-gray-600 mx-auto mb-3" />
+                  <h3 className="text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>Select a Complaint</h3>
+                  <p className="text-sm text-gray-500">Click to view details and take action</p>
+                </div>
               )}
             </AnimatePresence>
           </div>
