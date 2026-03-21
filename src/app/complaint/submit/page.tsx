@@ -19,10 +19,9 @@ import {
   Sparkles,
   ChevronRight,
   ChevronLeft,
-  Image as ImageIcon,
+  ImageIcon,
   FileText,
-  StopCircle,
-  Play
+  StopCircle
 } from 'lucide-react';
 
 const categories = [
@@ -50,19 +49,15 @@ export default function SubmitComplaint() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   
-  // Form data
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('other');
   const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   
-  // Media
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  const [images, setImages] = useState<string[]>([]);
   
-  // AI Analysis
   const [aiAnalysis, setAiAnalysis] = useState<any>(null);
   const [duplicateWarning, setDuplicateWarning] = useState<any>(null);
   
@@ -70,7 +65,6 @@ export default function SubmitComplaint() {
   const recordingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
 
-  // Get user location
   const getLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -80,17 +74,11 @@ export default function SubmitComplaint() {
             longitude: position.coords.longitude,
           });
         },
-        (error) => {
-          console.error('Location error:', error);
-          alert('Unable to get your location. Please enable location services.');
-        }
+        (error) => console.error('Location error:', error)
       );
-    } else {
-      alert('Geolocation is not supported by your browser.');
     }
   };
 
-  // Voice recording functions
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -118,8 +106,7 @@ export default function SubmitComplaint() {
         setRecordingTime(prev => prev + 1);
       }, 1000);
     } catch (error) {
-      console.error('Microphone access error:', error);
-      alert('Unable to access microphone. Please allow microphone access.');
+      console.error('Microphone error:', error);
     }
   };
 
@@ -144,7 +131,6 @@ export default function SubmitComplaint() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // AI Analysis
   const analyzeComplaint = async () => {
     if (!title || title.length < 10 || !description || description.length < 50) {
       alert('Please provide a title (min 10 chars) and description (min 50 chars) first.');
@@ -162,35 +148,25 @@ export default function SubmitComplaint() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      if (!response.ok) throw new Error('Analysis failed');
 
       const result = await response.json();
-      
       if (result.success) {
         setAiAnalysis(result.data.classification);
         if (result.data.duplicates?.isDuplicate) {
           setDuplicateWarning(result.data.duplicates);
         }
-        // Go to review step to show results
         setCurrentStep(4);
       }
     } catch (error) {
       console.error('Analysis error:', error);
-      // Still set mock data for demo
-      setAiAnalysis({
-        category: selectedCategory || 'other',
-        severity: 'medium',
-        confidence: 0.85,
-      });
+      setAiAnalysis({ category: selectedCategory || 'other', severity: 'medium', confidence: 0.85 });
       setCurrentStep(4);
     } finally {
       setIsAnalyzing(false);
     }
   };
 
-  // Form submission
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -210,27 +186,18 @@ export default function SubmitComplaint() {
     
     try {
       const userId = 'demo-user-' + Date.now();
-
       const response = await fetch('/api/complaints', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title,
-          description,
-          category: selectedCategory,
-          location,
-          userId,
+          title, description, category: selectedCategory, location, userId,
         }),
       });
 
       const result = await response.json();
-      
-      // Always navigate on success (demo mode)
       const complaintId = result?.data?.complaint?.id || 'CMP-' + Math.random().toString(36).substr(2, 9).toUpperCase();
       router.push(`/complaint/track?id=${complaintId}&success=true`);
     } catch (error) {
-      console.error('Submit error:', error);
-      // Still navigate for demo - generate a mock ID
       const mockId = 'CMP-' + Math.random().toString(36).substr(2, 9).toUpperCase();
       router.push(`/complaint/track?id=${mockId}&success=true`);
     } finally {
@@ -256,81 +223,56 @@ export default function SubmitComplaint() {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
-  const isStepValid = () => {
-    if (currentStep === 1) {
-      return title.length >= 10 && description.length >= 50;
-    }
-    return true;
-  };
-
   return (
-    <div className="min-h-screen retro-grid noise-overlay">
-      {/* Background Orbs */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          animate={{ x: [0, 50, 0], y: [0, -30, 0] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-          className="absolute top-40 right-20 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{ x: [0, -40, 0], y: [0, 40, 0] }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute bottom-40 left-20 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl"
-        />
-      </div>
-
-      <div className="relative z-10 container mx-auto px-4 py-8 max-w-4xl">
-        {/* Header */}
-        <AnimatedSection delay={0.1}>
-          <Link href="/" className="inline-flex items-center text-amber-400 hover:text-amber-300 mb-8 transition-colors">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+        <div className="max-w-3xl mx-auto px-4 py-3">
+          <Link href="/" className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            <span className="text-sm font-medium">Back to Home</span>
+            <span className="text-sm">Back</span>
           </Link>
-          
-          <div className="text-center mb-10">
-            <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">
-              Submit a <span className="text-amber-400">Complaint</span>
-            </h1>
-            <p className="text-gray-400 max-w-lg mx-auto">
-              Report an issue and our AI will analyze and route it to the appropriate team
-            </p>
-          </div>
+        </div>
+      </header>
+
+      <div className="max-w-3xl mx-auto px-4 py-8">
+        {/* Title */}
+        <AnimatedSection delay={0.1} className="text-center mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+            Submit a Complaint
+          </h1>
+          <p className="text-gray-500">
+            Report an issue and our AI will analyze it
+          </p>
         </AnimatedSection>
 
         {/* Progress Steps */}
-        <AnimatedSection delay={0.2} className="mb-10">
+        <AnimatedSection delay={0.2} className="mb-8">
           <div className="flex items-center justify-center">
             {steps.map((step, index) => (
               <div key={step.id} className="flex items-center">
-                <motion.div
+                <motion.button
+                  onClick={() => step.id < currentStep && setCurrentStep(step.id)}
                   animate={{
                     scale: currentStep === step.id ? 1.1 : 1,
-                    backgroundColor: currentStep >= step.id ? 'rgba(245, 158, 11, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                    backgroundColor: currentStep >= step.id ? '#E60023' : '#F3F4F6',
                   }}
                   className={`
-                    w-12 h-12 rounded-xl flex items-center justify-center border cursor-pointer
-                    ${currentStep >= step.id ? 'border-amber-500/50' : 'border-white/10'}
-                    transition-all duration-300
+                    w-10 h-10 rounded-full flex items-center justify-center transition-all
+                    ${currentStep >= step.id ? 'text-white' : 'text-gray-400'}
                   `}
-                  onClick={() => {
-                    if (step.id < currentStep || (step.id === currentStep + 1 && isStepValid())) {
-                      setCurrentStep(step.id);
-                    }
-                  }}
                 >
-                  <step.icon className={`w-5 h-5 ${currentStep >= step.id ? 'text-amber-400' : 'text-gray-500'}`} />
-                </motion.div>
+                  <step.icon className="w-4 h-4" />
+                </motion.button>
                 {index < steps.length - 1 && (
-                  <div className={`w-16 h-0.5 mx-2 ${currentStep > step.id ? 'bg-amber-500' : 'bg-white/10'}`} />
+                  <div className={`w-12 h-0.5 mx-2 ${currentStep > step.id ? 'bg-[#E60023]' : 'bg-gray-200'}`} />
                 )}
               </div>
             ))}
           </div>
-          <div className="flex justify-center mt-4">
-            <span className="text-sm text-gray-400">
-              Step {currentStep} of {steps.length}: <span className="text-amber-400">{steps[currentStep - 1].title}</span>
-            </span>
-          </div>
+          <p className="text-center text-sm text-gray-500 mt-3">
+            Step {currentStep} of 4: <span className="text-[#E60023] font-medium">{steps[currentStep - 1].title}</span>
+          </p>
         </AnimatedSection>
 
         <form onSubmit={onSubmit}>
@@ -345,56 +287,48 @@ export default function SubmitComplaint() {
                 transition={{ duration: 0.3 }}
               >
                 <AnimatedCard className="space-y-6">
-                  <div className="flex items-center space-x-3 mb-6">
-                    <FloatingIcon>
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                        <FileText className="w-5 h-5 text-white" />
-                      </div>
-                    </FloatingIcon>
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-blue-600" />
+                    </div>
                     <div>
-                      <h2 className="font-display text-xl font-semibold text-white">Complaint Details</h2>
-                      <p className="text-sm text-gray-400">Provide a clear title and description</p>
+                      <h2 className="text-lg font-semibold text-gray-900">Complaint Details</h2>
+                      <p className="text-sm text-gray-500">Provide a clear title and description</p>
                     </div>
                   </div>
 
-                  <div className="space-y-5">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Title * <span className="text-gray-500">({title.length}/100)</span>
-                      </label>
-                      <input
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        className="glass-input"
-                        placeholder="Brief summary of the issue (e.g., Large pothole on Main Street)"
-                        maxLength={100}
-                      />
-                      {title.length > 0 && title.length < 10 && (
-                        <p className="text-amber-400 text-sm mt-2">
-                          {10 - title.length} more characters needed
-                        </p>
-                      )}
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Title * <span className="text-gray-400">({title.length}/100)</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="glass-input"
+                      placeholder="Brief summary (e.g., Large pothole on Main Street)"
+                      maxLength={100}
+                    />
+                    {title.length > 0 && title.length < 10 && (
+                      <p className="text-[#E60023] text-sm mt-1">{10 - title.length} more characters needed</p>
+                    )}
+                  </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">
-                        Detailed Description * <span className="text-gray-500">({description.length}/2000)</span>
-                      </label>
-                      <textarea
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        rows={6}
-                        className="glass-input resize-none"
-                        placeholder="Provide as much detail as possible including exact location, when you noticed it, and any safety concerns..."
-                        maxLength={2000}
-                      />
-                      {description.length > 0 && description.length < 50 && (
-                        <p className="text-amber-400 text-sm mt-2">
-                          {50 - description.length} more characters needed
-                        </p>
-                      )}
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Description * <span className="text-gray-400">({description.length}/2000)</span>
+                    </label>
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      rows={5}
+                      className="glass-input resize-none"
+                      placeholder="Provide details including exact location, when you noticed it, and any safety concerns..."
+                      maxLength={2000}
+                    />
+                    {description.length > 0 && description.length < 50 && (
+                      <p className="text-[#E60023] text-sm mt-1">{50 - description.length} more characters needed</p>
+                    )}
                   </div>
                 </AnimatedCard>
               </motion.div>
@@ -409,20 +343,18 @@ export default function SubmitComplaint() {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
               >
-                <AnimatedCard className="space-y-6">
+                <AnimatedCard>
                   <div className="flex items-center space-x-3 mb-6">
-                    <FloatingIcon>
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                        <AlertCircle className="w-5 h-5 text-white" />
-                      </div>
-                    </FloatingIcon>
+                    <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
+                      <AlertCircle className="w-5 h-5 text-purple-600" />
+                    </div>
                     <div>
-                      <h2 className="font-display text-xl font-semibold text-white">Select Category</h2>
-                      <p className="text-sm text-gray-400">Choose the most relevant category</p>
+                      <h2 className="text-lg font-semibold text-gray-900">Select Category</h2>
+                      <p className="text-sm text-gray-500">Choose the most relevant category</p>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {categories.map((cat) => (
                       <motion.button
                         key={cat.value}
@@ -431,23 +363,22 @@ export default function SubmitComplaint() {
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setSelectedCategory(cat.value)}
                         className={`
-                          relative flex flex-col items-center p-4 rounded-2xl cursor-pointer
-                          border transition-all duration-300
+                          relative flex flex-col items-center p-4 rounded-2xl cursor-pointer border-2 transition-all
                           ${selectedCategory === cat.value 
-                            ? 'border-amber-500/50 bg-amber-500/10' 
-                            : 'border-white/10 bg-white/5 hover:bg-white/10'
+                            ? 'border-[#E60023] bg-red-50' 
+                            : 'border-gray-200 hover:border-gray-300'
                           }
                         `}
                       >
-                        <span className="text-3xl mb-2">{cat.icon}</span>
-                        <span className="text-sm text-center text-gray-300">{cat.label}</span>
+                        <span className="text-2xl mb-2">{cat.icon}</span>
+                        <span className="text-sm text-gray-700">{cat.label}</span>
                         {selectedCategory === cat.value && (
                           <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            className="absolute top-2 right-2 w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center"
+                            className="absolute top-2 right-2 w-5 h-5 bg-[#E60023] rounded-full flex items-center justify-center"
                           >
-                            <CheckCircle className="w-3 h-3 text-retro-dark" />
+                            <CheckCircle className="w-3 h-3 text-white" />
                           </motion.div>
                         )}
                       </motion.button>
@@ -467,117 +398,94 @@ export default function SubmitComplaint() {
                 transition={{ duration: 0.3 }}
               >
                 <AnimatedCard className="space-y-6">
-                  <div className="flex items-center space-x-3 mb-6">
-                    <FloatingIcon>
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
-                        <Camera className="w-5 h-5 text-white" />
-                      </div>
-                    </FloatingIcon>
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
+                      <Camera className="w-5 h-5 text-green-600" />
+                    </div>
                     <div>
-                      <h2 className="font-display text-xl font-semibold text-white">Location & Media</h2>
-                      <p className="text-sm text-gray-400">Add supporting evidence</p>
+                      <h2 className="text-lg font-semibold text-gray-900">Location & Media</h2>
+                      <p className="text-sm text-gray-500">Add supporting evidence (optional)</p>
                     </div>
                   </div>
 
-                  <div className="space-y-6">
-                    {/* Location */}
-                    <div className="flex items-center space-x-4">
+                  {/* Location */}
+                  <div className="flex items-center space-x-3">
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={getLocation}
+                      className="glass-btn-secondary flex items-center space-x-2"
+                    >
+                      <MapPin className="w-4 h-4" />
+                      <span>{location ? 'Location Added' : 'Add Location'}</span>
+                    </motion.button>
+                    {location && (
+                      <span className="text-green-600 text-sm flex items-center">
+                        <CheckCircle className="w-4 h-4 mr-1" /> Captured
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Image Upload */}
+                  <div className="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center hover:border-[#E60023]/30 transition-colors">
+                    <Camera className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-600 mb-1">Drag and drop photos here</p>
+                    <p className="text-gray-400 text-sm mb-3">PNG, JPG up to 5MB each</p>
+                    <label className="glass-btn-secondary cursor-pointer inline-block text-sm">
+                      <span>Browse Files</span>
+                      <input type="file" accept="image/*" multiple className="hidden" />
+                    </label>
+                  </div>
+
+                  {/* Voice Recording */}
+                  <div className="flex items-center space-x-3">
+                    {!isRecording && !audioBlob ? (
                       <motion.button
                         type="button"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={getLocation}
+                        onClick={startRecording}
                         className="glass-btn-secondary flex items-center space-x-2"
                       >
-                        <MapPin className="w-4 h-4" />
-                        <span>{location ? 'Location Added' : 'Add Location'}</span>
+                        <Mic className="w-4 h-4" />
+                        <span>Record Voice Note</span>
                       </motion.button>
-                      {location && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          className="glass-badge text-green-400 border-green-500/30"
-                        >
-                          <CheckCircle className="w-3 h-3" />
-                          <span>Captured</span>
-                        </motion.div>
-                      )}
-                    </div>
-
-                    {/* Image Upload */}
-                    <div className="border-2 border-dashed border-white/10 rounded-2xl p-8 text-center hover:border-amber-500/30 transition-colors">
-                      <Camera className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-                      <p className="text-gray-400 mb-2">Drag and drop photos here</p>
-                      <p className="text-gray-500 text-sm mb-4">PNG, JPG up to 5MB each (max 5 files)</p>
-                      <label className="glass-btn-secondary cursor-pointer inline-block">
-                        <span>Browse Files</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          multiple
-                          className="hidden"
-                          onChange={(e) => {
-                            const files = e.target.files;
-                            if (files) {
-                              // Handle file upload
-                              console.log('Files selected:', files.length);
-                            }
-                          }}
-                        />
-                      </label>
-                    </div>
-
-                    {/* Voice Recording */}
-                    <div className="flex items-center space-x-4">
-                      {!isRecording && !audioBlob ? (
+                    ) : isRecording ? (
+                      <div className="flex items-center space-x-3">
                         <motion.button
                           type="button"
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
-                          onClick={startRecording}
-                          className="glass-btn-secondary flex items-center space-x-2"
+                          onClick={stopRecording}
+                          className="glass-btn flex items-center space-x-2"
                         >
-                          <Mic className="w-4 h-4" />
-                          <span>Record Voice Note</span>
+                          <StopCircle className="w-4 h-4" />
+                          <span>Stop</span>
                         </motion.button>
-                      ) : isRecording ? (
-                        <div className="flex items-center space-x-4">
-                          <motion.button
-                            type="button"
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={stopRecording}
-                            className="glass-btn flex items-center space-x-2 !bg-red-500"
-                          >
-                            <StopCircle className="w-4 h-4" />
-                            <span>Stop Recording</span>
-                          </motion.button>
-                          <span className="text-red-400 font-mono">{formatTime(recordingTime)}</span>
-                          <motion.div
-                            animate={{ opacity: [1, 0.5, 1] }}
-                            transition={{ duration: 1, repeat: Infinity }}
-                            className="w-3 h-3 bg-red-500 rounded-full"
-                          />
-                        </div>
-                      ) : (
-                        <div className="flex items-center space-x-4">
-                          <span className="text-green-400 flex items-center space-x-2">
-                            <CheckCircle className="w-4 h-4" />
-                            <span>Recording saved ({formatTime(recordingTime)})</span>
-                          </span>
-                          <motion.button
-                            type="button"
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={deleteRecording}
-                            className="text-red-400 text-sm hover:text-red-300"
-                          >
-                            Delete
-                          </motion.button>
-                        </div>
-                      )}
-                      <span className="text-gray-500 text-sm">Optional</span>
-                    </div>
+                        <span className="text-[#E60023] font-mono text-sm">{formatTime(recordingTime)}</span>
+                        <motion.div
+                          animate={{ opacity: [1, 0.5, 1] }}
+                          transition={{ duration: 1, repeat: Infinity }}
+                          className="w-2 h-2 bg-[#E60023] rounded-full"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex items-center space-x-3">
+                        <span className="text-green-600 text-sm flex items-center">
+                          <CheckCircle className="w-4 h-4 mr-1" />
+                          Saved ({formatTime(recordingTime)})
+                        </span>
+                        <button
+                          type="button"
+                          onClick={deleteRecording}
+                          className="text-[#E60023] text-sm hover:underline"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                    <span className="text-gray-400 text-sm">Optional</span>
                   </div>
                 </AnimatedCard>
               </motion.div>
@@ -591,101 +499,67 @@ export default function SubmitComplaint() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
-                className="space-y-6"
+                className="space-y-4"
               >
                 <AnimatedCard>
-                  <div className="flex items-center space-x-3 mb-6">
-                    <FloatingIcon>
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
-                        <Sparkles className="w-5 h-5 text-white" />
-                      </div>
-                    </FloatingIcon>
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-[#E60023]/10 flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-[#E60023]" />
+                    </div>
                     <div>
-                      <h2 className="font-display text-xl font-semibold text-white">Review & Submit</h2>
-                      <p className="text-sm text-gray-400">Verify your complaint details</p>
+                      <h2 className="text-lg font-semibold text-gray-900">Review & Submit</h2>
+                      <p className="text-sm text-gray-500">Verify your complaint details</p>
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="glass-input bg-white/5">
+                  <div className="space-y-3">
+                    <div className="p-3 bg-gray-50 rounded-xl">
                       <p className="text-xs text-gray-500 mb-1">Title</p>
-                      <p className="text-white">{title || 'Not provided'}</p>
+                      <p className="text-gray-900">{title || 'Not provided'}</p>
                     </div>
-                    <div className="glass-input bg-white/5">
+                    <div className="p-3 bg-gray-50 rounded-xl">
                       <p className="text-xs text-gray-500 mb-1">Description</p>
-                      <p className="text-white text-sm line-clamp-3">{description || 'Not provided'}</p>
+                      <p className="text-gray-900 text-sm line-clamp-2">{description || 'Not provided'}</p>
                     </div>
-                    <div className="glass-input bg-white/5">
-                      <p className="text-xs text-gray-500 mb-1">Category</p>
-                      <p className="text-white flex items-center">
-                        <span className="mr-2">{categories.find(c => c.value === selectedCategory)?.icon}</span>
-                        {categories.find(c => c.value === selectedCategory)?.label || 'Not selected'}
-                      </p>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="glass-input bg-white/5">
-                        <p className="text-xs text-gray-500 mb-1">Location</p>
-                        <p className="text-white">{location ? 'Captured' : 'Not provided'}</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-3 bg-gray-50 rounded-xl">
+                        <p className="text-xs text-gray-500 mb-1">Category</p>
+                        <p className="text-gray-900 flex items-center">
+                          <span className="mr-1">{categories.find(c => c.value === selectedCategory)?.icon}</span>
+                          {categories.find(c => c.value === selectedCategory)?.label}
+                        </p>
                       </div>
-                      <div className="glass-input bg-white/5">
+                      <div className="p-3 bg-gray-50 rounded-xl">
                         <p className="text-xs text-gray-500 mb-1">Voice Note</p>
-                        <p className="text-white">{audioBlob ? formatTime(recordingTime) : 'Not recorded'}</p>
+                        <p className="text-gray-900">{audioBlob ? formatTime(recordingTime) : 'Not recorded'}</p>
                       </div>
                     </div>
                   </div>
                 </AnimatedCard>
 
-                {/* AI Analysis Preview */}
+                {/* AI Analysis */}
                 <AnimatePresence>
                   {aiAnalysis && (
                     <motion.div
-                      initial={{ opacity: 0, y: 20 }}
+                      initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
                     >
-                      <AnimatedCard className="border-amber-500/30 bg-amber-500/5">
-                        <div className="flex items-center space-x-3 mb-4">
-                          <Sparkles className="w-5 h-5 text-amber-400" />
-                          <h3 className="font-semibold text-amber-200">AI Analysis</h3>
+                      <AnimatedCard className="border-[#E60023]/20 bg-red-50/50">
+                        <div className="flex items-center space-x-2 mb-3">
+                          <Sparkles className="w-4 h-4 text-[#E60023]" />
+                          <h3 className="font-medium text-gray-900">AI Analysis</h3>
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-3 text-sm">
                           <div>
-                            <p className="text-xs text-gray-500 mb-1">Category</p>
-                            <span className="glass-badge">{aiAnalysis.category}</span>
+                            <span className="text-gray-500">Category: </span>
+                            <span className="font-medium">{aiAnalysis.category}</span>
                           </div>
                           <div>
-                            <p className="text-xs text-gray-500 mb-1">Severity</p>
-                            <span className={`glass-badge ${
-                              aiAnalysis.severity === 'critical' ? 'text-red-400 border-red-500/30' :
-                              aiAnalysis.severity === 'high' ? 'text-orange-400 border-orange-500/30' :
-                              'text-amber-400 border-amber-500/30'
-                            }`}>
-                              {aiAnalysis.severity}
-                            </span>
-                          </div>
-                        </div>
-                      </AnimatedCard>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Duplicate Warning */}
-                <AnimatePresence>
-                  {duplicateWarning && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                    >
-                      <AnimatedCard className="border-orange-500/30 bg-orange-500/5">
-                        <div className="flex items-start space-x-3">
-                          <AlertTriangle className="w-5 h-5 text-orange-400 mt-0.5" />
-                          <div>
-                            <h4 className="font-semibold text-orange-200 mb-1">Potential Duplicate Detected</h4>
-                            <p className="text-sm text-gray-400">
-                              Found {duplicateWarning.similarComplaints?.length || 0} similar complaint(s). 
-                              This may be linked to an existing issue.
-                            </p>
+                            <span className="text-gray-500">Severity: </span>
+                            <span className={`font-medium ${
+                              aiAnalysis.severity === 'critical' ? 'text-red-600' :
+                              aiAnalysis.severity === 'high' ? 'text-orange-600' : 'text-gray-900'
+                            }`}>{aiAnalysis.severity}</span>
                           </div>
                         </div>
                       </AnimatedCard>
@@ -698,27 +572,25 @@ export default function SubmitComplaint() {
 
           {/* Navigation Buttons */}
           <motion.div 
-            className="flex justify-between mt-8"
+            className="flex justify-between mt-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.3 }}
           >
             {currentStep > 1 ? (
               <GlowButton variant="secondary" onClick={prevStep} type="button">
-                <span className="flex items-center space-x-2">
+                <span className="flex items-center space-x-1">
                   <ChevronLeft className="w-4 h-4" />
-                  <span>Previous</span>
+                  <span>Back</span>
                 </span>
               </GlowButton>
             ) : (
               <Link href="/">
-                <GlowButton variant="secondary" type="button">
-                  Cancel
-                </GlowButton>
+                <GlowButton variant="secondary" type="button">Cancel</GlowButton>
               </Link>
             )}
 
-            <div className="flex space-x-3">
+            <div className="flex space-x-2">
               {currentStep === 3 && (
                 <GlowButton 
                   variant="secondary" 
@@ -727,12 +599,12 @@ export default function SubmitComplaint() {
                   disabled={isAnalyzing || !title || title.length < 10 || !description || description.length < 50}
                 >
                   {isAnalyzing ? (
-                    <span className="flex items-center space-x-2">
+                    <span className="flex items-center space-x-1">
                       <Loader2 className="w-4 h-4 animate-spin" />
                       <span>Analyzing...</span>
                     </span>
                   ) : (
-                    <span className="flex items-center space-x-2">
+                    <span className="flex items-center space-x-1">
                       <Sparkles className="w-4 h-4" />
                       <span>Analyze with AI</span>
                     </span>
@@ -742,7 +614,7 @@ export default function SubmitComplaint() {
 
               {currentStep < 4 ? (
                 <GlowButton onClick={nextStep} type="button">
-                  <span className="flex items-center space-x-2">
+                  <span className="flex items-center space-x-1">
                     <span>Continue</span>
                     <ChevronRight className="w-4 h-4" />
                   </span>
@@ -750,14 +622,14 @@ export default function SubmitComplaint() {
               ) : (
                 <GlowButton type="submit" disabled={isSubmitting}>
                   {isSubmitting ? (
-                    <span className="flex items-center space-x-2">
+                    <span className="flex items-center space-x-1">
                       <Loader2 className="w-4 h-4 animate-spin" />
                       <span>Submitting...</span>
                     </span>
                   ) : (
-                    <span className="flex items-center space-x-2">
+                    <span className="flex items-center space-x-1">
                       <Send className="w-4 h-4" />
-                      <span>Submit Complaint</span>
+                      <span>Submit</span>
                     </span>
                   )}
                 </GlowButton>

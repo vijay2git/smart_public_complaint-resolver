@@ -3,23 +3,29 @@
 @tailwind utilities;
 
 :root {
-  --retro-cream: #FDF6E3;
-  --retro-amber: #F59E0B;
-  --retro-orange: #EA580C;
-  --retro-brown: #78350F;
-  --retro-dark: #1C1917;
-  --retro-gray: #292524;
-  --glass-bg: rgba(255, 255, 255, 0.08);
-  --glass-border: rgba(255, 255, 255, 0.15);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  --bg-gradient-start: #0F0F0F;
-  --bg-gradient-mid: #1A1A2E;
-  --bg-gradient-end: #16213E;
-  --accent-primary: #F59E0B;
-  --accent-secondary: #8B5CF6;
-  --accent-success: #10B981;
-  --accent-danger: #EF4444;
-  --accent-info: #3B82F6;
+  /* Pinterest-inspired Color Palette */
+  --pin-red: #E60023;
+  --pin-red-dark: #AD081B;
+  --pin-red-light: #FFE0E0;
+  --pin-gray-100: #F5F5F5;
+  --pin-gray-200: #EFEFEF;
+  --pin-gray-300: #CDCDCD;
+  --pin-gray-400: #A8A8A8;
+  --pin-gray-500: #767676;
+  --pin-gray-600: #5F5F5F;
+  --pin-gray-700: #333333;
+  --pin-gray-800: #211922;
+  --pin-black: #111111;
+  --pin-white: #FFFFFF;
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  
+  /* Background */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F5F5F5;
 }
 
 @layer base {
@@ -34,180 +40,181 @@
   }
   
   body {
-    font-family: 'Space Grotesk', system-ui, sans-serif;
-    background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: var(--bg-primary);
     min-height: 100vh;
-    color: #FAFAF9;
+    color: var(--pin-black);
     overflow-x: hidden;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 600;
     letter-spacing: -0.02em;
   }
 }
 
 @layer components {
+  /* Clean Card */
   .glass-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    border-radius: 24px;
-    box-shadow: var(--glass-shadow);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--pin-white);
+    border-radius: 16px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid var(--pin-gray-200);
   }
   
   .glass-card:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.25);
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
   }
   
+  /* Clean Input */
   .glass-input {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 14px 18px;
-    color: #FAFAF9;
+    background: var(--pin-white);
+    border: 2px solid var(--pin-gray-200);
+    border-radius: 16px;
+    padding: 12px 16px;
+    color: var(--pin-black);
     font-size: 15px;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     width: 100%;
   }
   
   .glass-input:focus {
     outline: none;
-    border-color: var(--accent-primary);
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+    border-color: var(--pin-red);
+    box-shadow: 0 0 0 4px var(--pin-red-light);
   }
   
   .glass-input::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    color: var(--pin-gray-400);
   }
   
+  /* Primary Button (Pinterest Red) */
   .glass-btn {
-    background: linear-gradient(135deg, var(--accent-primary) 0%, var(--retro-orange) 100%);
+    background: var(--pin-red);
     border: none;
-    border-radius: 12px;
-    padding: 14px 28px;
-    color: #1C1917;
+    border-radius: 24px;
+    padding: 12px 24px;
+    color: var(--pin-white);
     font-weight: 600;
     font-size: 15px;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .glass-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s ease;
-  }
-  
-  .glass-btn:hover::before {
-    left: 100%;
+    transition: all 0.2s ease;
   }
   
   .glass-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+    background: var(--pin-red-dark);
+    transform: scale(1.02);
   }
   
+  .glass-btn:active {
+    transform: scale(0.98);
+  }
+  
+  /* Secondary Button */
   .glass-btn-secondary {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 12px;
-    padding: 14px 28px;
-    color: #FAFAF9;
-    font-weight: 500;
+    background: var(--pin-gray-200);
+    border: none;
+    border-radius: 24px;
+    padding: 12px 24px;
+    color: var(--pin-black);
+    font-weight: 600;
     font-size: 15px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
   }
   
   .glass-btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
+    background: var(--pin-gray-300);
   }
   
+  /* Badge */
   .glass-badge {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 20px;
-    padding: 6px 14px;
+    background: var(--pin-gray-200);
+    border-radius: 16px;
+    padding: 6px 12px;
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
+    color: var(--pin-gray-700);
   }
   
-  .glow-text {
-    text-shadow: 0 0 20px rgba(245, 158, 11, 0.5),
-                 0 0 40px rgba(245, 158, 11, 0.3);
+  /* Status Badges */
+  .badge-pending {
+    background: #FEF3C7;
+    color: #92400E;
   }
   
+  .badge-in-progress {
+    background: #DBEAFE;
+    color: #1E40AF;
+  }
+  
+  .badge-escalated {
+    background: #FEE2E2;
+    color: #991B1B;
+  }
+  
+  .badge-resolved {
+    background: #D1FAE5;
+    color: #065F46;
+  }
+  
+  /* Gradient Border */
   .gradient-border {
     position: relative;
-    background: var(--glass-bg);
-    backdrop-filter: blur(20px);
+    background: var(--pin-white);
     border-radius: 24px;
+    overflow: hidden;
   }
   
   .gradient-border::before {
     content: '';
     position: absolute;
     inset: -2px;
-    background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary), var(--accent-primary));
+    background: linear-gradient(45deg, var(--pin-red), #FF6B6B, var(--pin-red));
     border-radius: 26px;
     z-index: -1;
-    animation: borderRotate 4s linear infinite;
-    background-size: 300% 300%;
+    animation: gradientMove 3s ease infinite;
+    background-size: 200% 200%;
   }
   
-  @keyframes borderRotate {
-    0% { background-position: 0% 50%; }
+  @keyframes gradientMove {
+    0%, 100% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
   }
   
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   
-  .float-animation {
-    animation: float 3s ease-in-out infinite;
+  .fade-in {
+    animation: fadeIn 0.4s ease-out;
   }
   
-  @keyframes pulseGlow {
-    0%, 100% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.3); }
-    50% { box-shadow: 0 0 40px rgba(245, 158, 11, 0.6); }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   
-  .pulse-glow {
-    animation: pulseGlow 2s ease-in-out infinite;
+  .slide-up {
+    animation: slideUp 0.5s ease-out;
   }
   
+  /* Grid Background (subtle) */
   .retro-grid {
     background-image: 
-      linear-gradient(rgba(245, 158, 11, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(245, 158, 11, 0.03) 1px, transparent 1px);
-    background-size: 50px 50px;
+      linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
   }
   
+  /* Noise Overlay (very subtle) */
   .noise-overlay::after {
     content: '';
     position: fixed;
@@ -215,37 +222,59 @@
     left: 0;
     width: 100%;
     height: 100%;
-    opacity: 0.02;
+    opacity: 0.015;
     pointer-events: none;
     z-index: 0;
-    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
   }
   
+  /* Divider */
   .retro-divider {
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
-    margin: 40px 0;
+    height: 1px;
+    background: var(--pin-gray-200);
+    margin: 24px 0;
   }
   
+  /* Scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
   }
   
   ::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--pin-gray-100);
   }
   
   ::-webkit-scrollbar-thumb {
-    background: rgba(245, 158, 11, 0.3);
+    background: var(--pin-gray-300);
     border-radius: 4px;
   }
   
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(245, 158, 11, 0.5);
+    background: var(--pin-gray-400);
   }
 }
 
+/* Selection */
 ::selection {
-  background: rgba(245, 158, 11, 0.3);
-  color: #FAFAF9;
+  background: var(--pin-red-light);
+  color: var(--pin-red-dark);
+}
+
+/* Focus visible for accessibility */
+:focus-visible {
+  outline: 2px solid var(--pin-red);
+  outline-offset: 2px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #1A1A1A;
+    --bg-secondary: #2D2D2D;
+    --pin-white: #2D2D2D;
+    --pin-gray-200: #404040;
+    --pin-gray-300: #525252;
+    --pin-gray-400: #737373;
+    --pin-gray-700: #E5E5E5;
+    --pin-black: #FAFAFA;
+  }
 }

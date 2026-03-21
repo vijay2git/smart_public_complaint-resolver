@@ -7,24 +7,9 @@ interface AnimatedCardProps {
   children: ReactNode;
   className?: string;
   delay?: number;
-  variant?: 'default' | 'hover' | 'float' | 'glow';
+  variant?: 'default' | 'hover';
   onClick?: () => void;
 }
-
-const cardVariants: Record<string, Variants> = {
-  default: {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] }
-    },
-  },
-  hover: {
-    rest: { scale: 1 },
-    hover: { scale: 1.02 },
-  },
-};
 
 export function AnimatedCard({ 
   children, 
@@ -35,14 +20,10 @@ export function AnimatedCard({
 }: AnimatedCardProps) {
   return (
     <motion.div
-      initial="hidden"
-      animate="visible"
-      whileHover={variant === 'hover' ? 'hover' : undefined}
-      variants={{
-        ...cardVariants.default,
-        ...(variant === 'hover' ? cardVariants.hover : {}),
-      }}
-      transition={{ delay }}
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay, ease: 'easeOut' }}
+      whileHover={variant === 'hover' ? { y: -4, boxShadow: '0 8px 30px rgba(0,0,0,0.12)' } : undefined}
       className={`glass-card p-6 ${className}`}
       onClick={onClick}
     >
@@ -60,13 +41,9 @@ interface AnimatedSectionProps {
 export function AnimatedSection({ children, className = '', delay = 0 }: AnimatedSectionProps) {
   return (
     <motion.section
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ 
-        duration: 0.6, 
-        delay,
-        ease: [0.4, 0, 0.2, 1] 
-      }}
+      transition={{ duration: 0.5, delay, ease: 'easeOut' }}
       className={className}
     >
       {children}
@@ -89,9 +66,7 @@ export function StaggerContainer({ children, className = '', staggerDelay = 0.1 
         hidden: { opacity: 0 },
         visible: {
           opacity: 1,
-          transition: {
-            staggerChildren: staggerDelay,
-          },
+          transition: { staggerChildren: staggerDelay },
         },
       }}
       className={className}
@@ -105,11 +80,11 @@ export function StaggerItem({ children, className = '' }: { children: ReactNode;
   return (
     <motion.div
       variants={{
-        hidden: { opacity: 0, y: 20 },
+        hidden: { opacity: 0, y: 15 },
         visible: { 
           opacity: 1, 
           y: 0,
-          transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] }
+          transition: { duration: 0.4, ease: 'easeOut' }
         },
       }}
       className={className}
@@ -128,11 +103,9 @@ interface FloatingIconProps {
 export function FloatingIcon({ children, className = '', delay = 0 }: FloatingIconProps) {
   return (
     <motion.div
-      animate={{ 
-        y: [0, -8, 0],
-      }}
+      animate={{ y: [0, -6, 0] }}
       transition={{
-        duration: 3,
+        duration: 2.5,
         repeat: Infinity,
         delay,
         ease: "easeInOut",
@@ -163,7 +136,7 @@ export function GlowButton({
 }: GlowButtonProps) {
   return (
     <motion.button
-      whileHover={{ scale: disabled ? 1 : 1.02, y: disabled ? 0 : -2 }}
+      whileHover={{ scale: disabled ? 1 : 1.02 }}
       whileTap={{ scale: disabled ? 1 : 0.98 }}
       className={`
         ${variant === 'primary' ? 'glass-btn' : 'glass-btn-secondary'}
