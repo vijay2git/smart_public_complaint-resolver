@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AnimatedCard, AnimatedSection, GlowButton } from '@/components/ui/animated';
+import { storeComplaint } from '../track/page';
 import { 
   AlertCircle, 
   ArrowLeft, 
@@ -151,25 +152,50 @@ export default function SubmitComplaint() {
 
     setIsSubmitting(true);
     
-    try {
-      const response = await fetch('/api/complaints', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title, description, category: selectedCategory, location,
-          userId: 'demo-user-' + Date.now(),
-        }),
-      });
-
-      const result = await response.json();
-      const complaintId = result?.data?.complaint?.id || 'CMP-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-      router.push(`/complaint/track?id=${complaintId}&success=true`);
-    } catch (error) {
-      const mockId = 'CMP-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-      router.push(`/complaint/track?id=${mockId}&success=true`);
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Generate complaint ID
+    const complaintId = 'CMP-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    
+    // Calculate AI severity based on category
+    const severityMap: Record<string, { severity: string; score: number }> = {
+      pothole: { severity: 'high', score: 75 },
+      water_leak: { severity: 'critical', score: 95 },
+      streetlight: { severity: 'medium', score: 65 },
+      trash: { severity: 'medium', score: 55 },
+      noise: { severity: 'low', score: 45 },
+      parking: { severity: 'medium', score: 60 },
+      sidewalk: { severity: 'medium', score: 65 },
+      graffiti: { severity: 'low', score: 40 },
+      other: { severity: 'medium', score: 50 },
+    };
+    
+    const categoryData = severityMap[selectedCategory] || severityMap.other;
+    
+    // Create complaint object
+    const newComplaint = {
+      id: complaintId,
+      title,
+      description,
+      category: selectedCategory,
+      severity: categoryData.severity,
+      priority_score: categoryData.score,
+      status: 'pending',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      location: location || undefined,
+      ai_classification: {
+        category: selectedCategory,
+        confidence: 0.85,
+        keywords: title.toLowerCase().split(' ').filter(w => w.length > 3).slice(0, 5),
+      },
+    };
+    
+    // Store complaint for tracking
+    storeComplaint(newComplaint);
+    
+    // Navigate to tracking page
+    router.push(`/complaint/track?id=${complaintId}&success=true`);
+    
+    setIsSubmitting(false);
   };
 
   const nextStep = () => {

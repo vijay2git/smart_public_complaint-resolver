@@ -14,7 +14,9 @@ import {
   RefreshCw,
   MapPin,
   Sparkles,
-  Loader2
+  Loader2,
+  Tag,
+  TrendingUp
 } from 'lucide-react';
 import { formatDate, timeAgo, getCategoryIcon } from '@/lib/utils';
 
@@ -40,6 +42,45 @@ const statusConfig: Record<string, { border: string; text: string; label: string
   closed: { border: 'border-gray-500/50', text: 'text-gray-400', label: 'Closed' },
 };
 
+// Store submitted complaints in memory
+const complaintStore: Record<string, Complaint> = {};
+
+// Function to store a complaint
+export function storeComplaint(complaint: Complaint) {
+  complaintStore[complaint.id] = complaint;
+}
+
+// Function to get a complaint
+export function getComplaint(id: string): Complaint | null {
+  return complaintStore[id] || null;
+}
+
+// Generate realistic data based on category
+function generateComplaintData(id: string): Complaint {
+  // Check if we have stored data
+  const stored = getComplaint(id);
+  if (stored) return stored;
+
+  // Default mock data
+  return {
+    id,
+    title: 'Large pothole on Main Street near intersection',
+    description: 'There is a large pothole approximately 2 feet wide on Main Street, near the intersection with Oak Avenue. It has been causing traffic issues and is a safety hazard for cyclists.',
+    category: 'pothole',
+    severity: 'high',
+    priority_score: 85,
+    status: 'in_progress',
+    created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    updated_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+    location: { latitude: 40.7128, longitude: -74.0060, address: 'Main Street & Oak Avenue' },
+    ai_classification: { 
+      category: 'pothole', 
+      confidence: 0.92, 
+      keywords: ['pothole', 'road', 'traffic', 'safety'] 
+    }
+  };
+}
+
 export default function TrackComplaint() {
   const searchParams = useSearchParams();
   const complaintId = searchParams.get('id');
@@ -55,23 +96,11 @@ export default function TrackComplaint() {
     setError(null);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await new Promise(resolve => setTimeout(resolve, 600));
       
-      const mockComplaint: Complaint = {
-        id,
-        title: 'Large pothole on Main Street near intersection',
-        description: 'There is a large pothole approximately 2 feet wide on Main Street, near the intersection with Oak Avenue.',
-        category: 'pothole',
-        severity: 'high',
-        priority_score: 85,
-        status: 'in_progress',
-        created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
-        location: { latitude: 40.7128, longitude: -74.0060, address: 'Main Street & Oak Avenue' },
-        ai_classification: { category: 'pothole', confidence: 0.92, keywords: ['pothole', 'road', 'traffic'] }
-      };
-
-      setComplaint(mockComplaint);
+      // Get complaint from store or generate mock data
+      const complaintData = generateComplaintData(id);
+      setComplaint(complaintData);
     } catch (err) {
       setError('Failed to fetch complaint details.');
     } finally {
@@ -238,7 +267,8 @@ export default function TrackComplaint() {
                     <span className={`px-2 py-1 rounded text-xs font-medium ${
                       complaint.severity === 'critical' ? 'bg-red-500/20 text-red-400' :
                       complaint.severity === 'high' ? 'bg-orange-500/20 text-orange-400' :
-                      'bg-gray-500/20 text-gray-400'
+                      complaint.severity === 'medium' ? 'bg-amber-500/20 text-amber-400' :
+                      'bg-green-500/20 text-green-400'
                     }`}>
                       {complaint.severity}
                     </span>
@@ -305,7 +335,7 @@ export default function TrackComplaint() {
                       <CheckCircle className="w-4 h-4 text-green-400" />
                     </div>
                     <div>
-                      <p className="text-white">Submitted</p>
+                      <p className="text-white">Complaint Received</p>
                       <p className="text-sm text-gray-500">{formatDate(complaint.created_at)}</p>
                     </div>
                   </div>
@@ -372,23 +402,5 @@ export default function TrackComplaint() {
         </AnimatePresence>
       </div>
     </div>
-  );
-}
-
-function Tag({ className }: { className?: string }) {
-  return (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.36-6.36c.94-.94.94-2.48 0-3.42L12 2Z"/>
-      <path d="M7 7h.01"/>
-    </svg>
-  );
-}
-
-function TrendingUp({ className }: { className?: string }) {
-  return (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
-      <polyline points="16 7 22 7 22 13"/>
-    </svg>
   );
 }
