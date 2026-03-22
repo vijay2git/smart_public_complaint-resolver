@@ -1,573 +1,158 @@
 <div align="center">
 
-# ═══════════════════════════════════════════════════════════
-# ⚡🤖 **SMART PUBLIC COMPLAINT RESOLVER** 🤖⚡
-# ═══════════════════════════════════════════════════════════
+# Smart Public Complaint Resolver
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=0EA5E9&center=true&vCenter=true&random=false&width=600&lines=Your+Voice+Matters;Powered+by+AI;Built+for+Communities" alt="Typing SVG" />
+<img src="https://readme-typing-svg.demolab.com?font=Inter&weight=500&size=20&pause=1000&color=3B82F6&center=true&vCenter=true&random=false&width=500&lines=AI-Powered+Issue+Management;Built+for+Modern+Communities" alt="typing" />
 
----
+<br/>
 
-<img src="https://img.shields.io/badge/⚡-Next.js%2016-black?style=for-the-badge&logo=next.js" alt="Next.js"/>
-<img src="https://img.shields.io/badge/⚛️-React%2018-blue?style=for-the-badge&logo=react" alt="React"/>
-<img src="https://img.shields.io/badge/🔷-TypeScript%205.4-blue?style=for-the-badge&logo=typescript" alt="TypeScript"/>
-<img src="https://img.shields.io/badge/🎨-Tailwind%20CSS-cyan?style=for-the-badge&logo=tailwindcss" alt="Tailwind"/>
-<img src="https://img.shields.io/badge/🤖-AI%20Powered-green?style=for-the-badge&logo=openai" alt="AI"/>
-<img src="https://img.shields.io/badge/✨-Framer%20Motion-purple?style=for-the-badge&logo=framer" alt="Framer"/>
-
-<img src="https://img.shields.io/badge/💾-Supabase-black?style=for-the-badge&logo=supabase" alt="Supabase"/>
-<img src="https://img.shields.io/badge/📧-Resend-orange?style=for-the-badge&logo=google Messages" alt="Resend"/>
-<img src="https://img.shields.io/badge/📱-Twilio-red?style=for-the-badge&logo=twilio" alt="Twilio"/>
-<img src="https://img.shields.io/badge/🌐-MIT%20License-green?style=for-the-badge&logo=github" alt="License"/>
+<img src="https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js" height="28"/>
+<img src="https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react" height="28"/>
+<img src="https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript" height="28"/>
+<img src="https://img.shields.io/badge/Tailwind-3.4-cyan?style=for-the-badge&logo=tailwindcss" height="28"/>
+<img src="https://img.shields.io/badge/OpenAI-GPT4-green?style=for-the-badge&logo=openai" height="28"/>
+<img src="https://img.shields.io/badge/Supabase-Database-black?style=for-the-badge&logo=supabase" height="28"/>
 
 </div>
 
 ---
 
-<div align="center">
+## Overview
 
-## 🎬 **WATCH THE MAGIC** 🎬
+An intelligent platform where citizens submit community issues and AI handles the rest — classifying, prioritizing, and routing complaints to the right teams instantly.
 
-```
-╔═══════════════════════════════════════════════════════════════════╗
-║                                                                   ║
-║   👤 CITIZEN                    🤖 AI ENGINE              👨‍💼 ADMIN    ║
-║                                                                   ║
-║       │                              │                        │   ║
-║       ▼                              ▼                        ▼   ║
-║   ┌───────┐                    ┌───────────┐             ┌─────┐  ║
-║   │ WRITE │ ──────────────────▶│  ANALYZE  │────────────▶│ACT! │  ║
-║   │ ISSUE │                    │  & SORT   │             │IONS │  ║
-║   └───────┘                    └───────────┘             └─────┘  ║
-║       │                              │                        │   ║
-║       ▼                              ▼                        ▼   ║
-║   ┌───────┐                    ┌───────────┐             ┌─────┐  ║
-║   │ TRACK │ ◀──────────────────│  NOTIFY   │◀────────────│UPDATE│ ║
-║   │STATUS │                    │   ALERT   │             │ REPLY│ ║
-║   └───────┘                    └───────────┘             └─────┘  ║
-║                                                                   ║
-╚═══════════════════════════════════════════════════════════════════╝
-```
-
-</div>
+**How it works:** Citizens report → AI analyzes → Teams resolve → Everyone gets notified.
 
 ---
 
-# ╔════════════════════════════════════════════════════════════════╗
-# ║                    🎯 **WHAT WE DO** 🎯                        ║
-# ╚════════════════════════════════════════════════════════════════╝
+## Features
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                                                                         │
-│   THE PROBLEM 😤                          THE SOLUTION 😊               │
-│   ═══════════════                         ═════════════════             │
-│                                                                         │
-│   ❌ Complaints lost                    ✅ AI tracks everything        │
-│   ❌ No updates                         ✅ Real-time notifications     │
-│   ❌ Slow response                      ✅ Instant AI analysis         │
-│   ❌ Wrong department                   ✅ Auto-routing to experts     │
-│   ❌ No accountability                  ✅ Full transparency           │
-│                                                                         │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+| Feature | Description |
+|---------|-------------|
+| **AI Analysis** | Auto-classifies issues, scores severity, detects duplicates |
+| **Smart Routing** | Routes complaints to appropriate departments |
+| **Real-time Tracking** | Citizens track status from submission to resolution |
+| **Notifications** | Email and SMS alerts at every stage |
+| **Admin Dashboard** | Manage, assign, and monitor all complaints |
 
 ---
 
-# ╔════════════════════════════════════════════════════════════════╗
-# ║              🌟 **FEATURE SPOTLIGHT** 🌟                       ║
-# ╚════════════════════════════════════════════════════════════════╝
+## Tech Stack
 
-```
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                                                                              ║
-║  🧠 AI BRAIN                                                                 ║
-║  ┌────────────────────────────────────────────────────────────────────────┐  ║
-║  │  ████████████████████████████████████████████████████  95% Accuracy    │  ║
-║  └────────────────────────────────────────────────────────────────────────┘  ║
-║  → Classifies issues automatically                                          ║
-║  → Scores severity (1-10)                                                   ║
-║  → Detects duplicate complaints                                             ║
-║                                                                              ║
-║  ⚡ LIGHTNING FAST                                                           ║
-║  ┌────────────────────────────────────────────────────────────────────────┐  ║
-║  │  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░  < 2 seconds analysis                 │  ║
-║  └────────────────────────────────────────────────────────────────────────┘  ║
-║  → Instant complaint processing                                             ║
-║  → Real-time status updates                                                 ║
-║  → Immediate notifications                                                  ║
-║                                                                              ║
-║  📱 ALWAYS CONNECTED                                                        ║
-║  ┌────────────────────────────────────────────────────────────────────────┐  ║
-║  │  ✉️ Email  │  📱 SMS  │  🔔 Push  │  💬 In-App                        │  ║
-║  └────────────────────────────────────────────────────────────────────────┘  ║
-║  → Multi-channel notifications                                              ║
-║  → Never miss an update                                                     ║
-║                                                                              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-```
+**Frontend:** Next.js 16, React 18, Tailwind CSS, Framer Motion
+
+**Backend:** Next.js API Routes, Supabase
+
+**AI:** OpenAI GPT-4
+
+**Notifications:** Resend (Email), Twilio (SMS)
 
 ---
 
-# ╔════════════════════════════════════════════════════════════════╗
-# ║              📱 **USER JOURNEY ANIMATION** 📱                  ║
-# ╚════════════════════════════════════════════════════════════════╝
-
-## 👤 **CITIZEN SIDE**
-
-```
-    ┌─────────────────────────────────────────────────────────────────┐
-    │                                                                 │
-    │   STEP 1          STEP 2          STEP 3          STEP 4       │
-    │   ═══════         ═══════         ═══════         ═══════       │
-    │                                                                 │
-    │   📝 WRITE    ───▶  📍 PIN     ───▶  📸 PHOTO  ───▶  🚀 SEND   │
-    │                                                                 │
-    │   "There's a       Mark on        Upload          Submit!       │
-    │    broken          the map        evidence                      │
-    │    streetlight     where it       of the                        │
-    │    on Oak Ave"     is located     problem                       │
-    │                                                                 │
-    │      ⏱️ 30s         ⏱️ 10s         ⏱️ 15s          ⏱️ 1s         │
-    │                                                                 │
-    └─────────────────────────────────────────────────────────────────┘
-                                    │
-                                    ▼
-                    ╔═══════════════════════════════╗
-                    ║    🤖 AI PROCESSING...        ║
-                    ║    ▓▓▓▓▓▓▓▓▓▓░░░░░░░░ 65%    ║
-                    ╚═══════════════════════════════╝
-                                    │
-                                    ▼
-    ┌─────────────────────────────────────────────────────────────────┐
-    │                                                                 │
-    │   STEP 5          STEP 6          STEP 7          STEP 8       │
-    │   ═══════         ═══════         ═══════         ═══════       │
-    │                                                                 │
-    │   📧 EMAIL   ───▶  📱 SMS    ───▶  👀 TRACK  ───▶  ✅ DONE!   │
-    │                                                                 │
-    │   "Your ticket     "Update:        Watch the         Problem    │
-    │    #4521 is        Team assigned"  progress          solved!    │
-    │    received"                       live             🎉🎉🎉      │
-    │                                                                 │
-    └─────────────────────────────────────────────────────────────────┘
-```
-
-## 👨‍💼 **ADMIN SIDE**
-
-```
-╔═══════════════════════════════════════════════════════════════════════════════╗
-║                                                                               ║
-║  ┌─────────────────────────────────────────────────────────────────────────┐  ║
-║  │                        📊 DASHBOARD VIEW                                │  ║
-║  ├─────────────────────────────────────────────────────────────────────────┤  ║
-║  │                                                                         │  ║
-║  │   🔴 URGENT (3)    🟡 HIGH (12)    🟢 NORMAL (45)    ⚪ LOW (28)       │  ║
-║  │   ████████████     ████████████    ████████████      ████████████      │  ║
-║  │                                                                         │  ║
-║  │   ┌──────────────┬──────────────┬──────────────┬──────────────┐        │  ║
-║  │   │ 🆕 New       │ 👷 In        │ 🔍 Review    │ ✅ Done      │        │  ║
-║  │   │    (8)       │    Progress  │    (5)       │    (156)     │        │  ║
-║  │   │              │    (23)      │              │              │        │  ║
-║  │   └──────────────┴──────────────┴──────────────┴──────────────┘        │  ║
-║  │                                                                         │  ║
-║  └─────────────────────────────────────────────────────────────────────────┘  ║
-║                                                                               ║
-║  🤖 AI SUGGESTION: "Route #4521 to Public Works - High Priority"             ║
-║                                                                               ║
-║  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐                         ║
-║  │ ✅ YES  │  │ ❌ NO   │  │ 🔄 RECLASSIFY │  │ 📋 DETAILS │               ║
-║  └─────────┘  └─────────┘  └─────────┘  └─────────┘                         ║
-║                                                                               ║
-╚═══════════════════════════════════════════════════════════════════════════════╝
-```
-
----
-
-# ╔════════════════════════════════════════════════════════════════╗
-# ║              🛠️ **TECH STACK ANIMATION** 🛠️                   ║
-# ╚════════════════════════════════════════════════════════════════╝
-
-```
-                    ┌─────────────────────────────────┐
-                    │      🌐 BROWSER (CLIENT)        │
-                    │                                 │
-                    │  ┌─────────┐    ┌───────────┐   │
-                    │  │Next.js  │    │  Framer   │   │
-                    │  │   16    │    │  Motion   │   │
-                    │  └────┬────┘    └─────┬─────┘   │
-                    │       │               │         │
-                    │  ┌────┴───────────────┴────┐    │
-                    │  │    Tailwind CSS 3.4     │    │
-                    │  └────────────┬────────────┘    │
-                    └───────────────┼─────────────────┘
-                                    │
-                                    │ ⚡ API Calls
-                                    ▼
-        ┌───────────────────────────────────────────────────────────────┐
-        │                     🖥️ SERVER (API)                           │
-        │                                                               │
-        │   ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐   │
-        │   │   AI    │    │Complaint│    │  Email  │    │   SMS   │   │
-        │   │ Engine  │    │ Handler │    │ Service │    │ Service │   │
-        │   │   🤖    │    │   📋    │    │   📧    │    │   📱    │   │
-        │   └────┬────┘    └────┬────┘    └────┬────┘    └────┬────┘   │
-        │        │              │              │              │         │
-        │   ┌────┴────┐    ┌────┴────┐    ┌────┴────┐    ┌────┴────┐   │
-        │   │ OpenAI  │    │Supabase │    │ Resend  │    │ Twilio  │   │
-        │   │   GPT4  │    │   DB    │    │         │    │         │   │
-        │   └─────────┘    └─────────┘    └─────────┘    └─────────┘   │
-        │                                                               │
-        └───────────────────────────────────────────────────────────────┘
-```
-
----
-
-# ╔════════════════════════════════════════════════════════════════╗
-# ║              📂 **PROJECT STRUCTURE** 📂                       ║
-# ╚════════════════════════════════════════════════════════════════╝
-
-```
-📁 smart-complaint-resolver
-│
-├── 📂 src/
-│   │
-│   ├── 📂 app/                              🏠 PAGES & ROUTES
-│   │   │
-│   │   ├── 📂 admin/                        👨‍💼 Admin Dashboard
-│   │   │   └── 📄 page.tsx                  Main admin page
-│   │   │
-│   │   ├── 📂 api/                          🔌 BACKEND ENDPOINTS
-│   │   │   │
-│   │   │   ├── 📂 ai/                       🤖 AI Analysis
-│   │   │   │   ├── 📄 analyze.ts
-│   │   │   │   ├── 📄 classify.ts
-│   │   │   │   └── 📄 severity.ts
-│   │   │   │
-│   │   │   ├── 📂 complaints/               📋 Complaint CRUD
-│   │   │   │   ├── 📄 route.ts
-│   │   │   │   └── 📄 [id]/route.ts
-│   │   │   │
-│   │   │   ├── 📂 emails/                   📧 Email Service
-│   │   │   │   └── 📄 route.ts
-│   │   │   │
-│   │   │   └── 📂 notifications/            📱 SMS Service
-│   │   │       └── 📄 route.ts
-│   │   │
-│   │   ├── 📂 complaint/                    👤 CITIZEN PAGES
-│   │   │   ├── 📂 submit/                   ✍️ Submit Form
-│   │   │   └── 📂 track/                    🔍 Track Status
-│   │   │
-│   │   ├── 📄 globals.css                   🎨 Global Styles
-│   │   ├── 📄 layout.tsx                    📐 Root Layout
-│   │   └── 📄 page.tsx                      🏠 Home Page
-│   │
-│   ├── 📂 components/                       🧩 UI COMPONENTS
-│   │   └── 📂 ui/                           Reusable Pieces
-│   │       └── 📄 animated.tsx              ✨ Animation Library
-│   │
-│   ├── 📂 hooks/                            ⚡ CUSTOM HOOKS
-│   │   └── 📄 use*.ts                       Reusable Logic
-│   │
-│   ├── 📂 lib/                              🛠️ UTILITIES
-│   │   ├── 📄 supabase.ts                   🗄️ Database Client
-│   │   ├── 📄 openai.ts                     🤖 AI Client
-│   │   └── 📄 utils.ts                      Helper Functions
-│   │
-│   └── 📂 types/                            📝 TYPE DEFINITIONS
-│       └── 📄 index.ts                      Shared Types
-│
-├── 📄 .env.local.example                    🔑 ENV TEMPLATE
-├── 📄 package.json                          📦 DEPENDENCIES
-├── 📄 tailwind.config.js                    🎨 TAILWIND CONFIG
-├── 📄 tsconfig.json                         🔷 TYPESCRIPT CONFIG
-└── 📄 README.md                             📖 YOU ARE HERE!
-```
-
----
-
-# ╔════════════════════════════════════════════════════════════════╗
-# ║              🎯 **ISSUE CATEGORIES** 🎯                        ║
-# ╚════════════════════════════════════════════════════════════════╝
-
-```
-╔═══════════════════════════════════════════════════════════════════════════╗
-║                                                                           ║
-║  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐           ║
-║  │                 │  │                 │  │                 │           ║
-║  │   🕳️ ROAD       │  │   💧 WATER      │  │   💡 LIGHTING   │           ║
-║  │   DAMAGE        │  │   SYSTEMS       │  │                 │           ║
-║  │                 │  │                 │  │                 │           ║
-║  │ • Potholes      │  │ • Leaks         │  │ • Broken lights │           ║
-║  │ • Cracks        │  │ • Drainage      │  │ • Dark areas    │           ║
-║  │ • Hazards       │  │ • Quality       │  │ • Flickering    │           ║
-║  │                 │  │                 │  │                 │           ║
-║  └─────────────────┘  └─────────────────┘  └─────────────────┘           ║
-║                                                                           ║
-║  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐           ║
-║  │                 │  │                 │  │                 │           ║
-║  │   🗑️ WASTE      │  │   🔊 NOISE      │  │   🅿️ PARKING    │           ║
-║  │   MANAGEMENT    │  │   CONTROL       │  │   ISSUES        │           ║
-║  │                 │  │                 │  │                 │           ║
-║  │ • Missed pickup │  │ • Loud music    │  │ • Illegal park  │           ║
-║  │ • Dumping       │  │ • Construction  │  │ • Signage       │           ║
-║  │ • Overflow      │  │ • Late night    │  │ • Blocking      │           ║
-║  │                 │  │                 │  │                 │           ║
-║  └─────────────────┘  └─────────────────┘  └─────────────────┘           ║
-║                                                                           ║
-║  ┌─────────────────┐  ┌─────────────────┐                                ║
-║  │                 │  │                 │                                ║
-║  │   🚶 PEDESTRIAN │  │   🎨 VANDALISM  │                                ║
-║  │   SAFETY        │  │                 │                                ║
-║  │                 │  │                 │                                ║
-║  │ • Crosswalks    │  │ • Graffiti      │                                ║
-║  │ • Sidewalks     │  │ • Damage        │                                ║
-║  │ • Signage       │  │ • Defacement    │                                ║
-║  │                 │  │                 │                                ║
-║  └─────────────────┘  └─────────────────┘                                ║
-║                                                                           ║
-╚═══════════════════════════════════════════════════════════════════════════╝
-```
-
----
-
-# ╔════════════════════════════════════════════════════════════════╗
-# ║              🚀 **QUICK START** 🚀                             ║
-# ╚════════════════════════════════════════════════════════════════╝
-
-```
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                                                                              ║
-║   STEP 1️⃣                        STEP 2️⃣                        STEP 3️⃣       ║
-║   ════════                       ════════                       ════════       ║
-║                                                                              ║
-║   ┌──────────────┐              ┌──────────────┐              ┌──────────┐   ║
-║   │              │              │              │              │          │   ║
-║   │   📥 CLONE   │  ──────────▶ │  📦 INSTALL  │  ──────────▶ │ ⚙️ SETUP │   ║
-║   │              │              │              │              │          │   ║
-║   └──────────────┘              └──────────────┘              └──────────┘   ║
-║                                                                              ║
-║   git clone                     npm install                   cp .env       ║
-║   [repo-url]                                                  && edit       ║
-║                                                                              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-                                      │
-                                      ▼
-                         ╔════════════════════════╗
-                         ║   🚀 STEP 4️⃣: RUN!    ║
-                         ║                        ║
-                         ║   npm run dev          ║
-                         ║                        ║
-                         ║   🌐 localhost:3000     ║
-                         ╚════════════════════════╝
-```
-
-### 📋 Commands
+## Quick Start
 
 ```bash
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                                                                             │
-│   📥 CLONE                                                                  │
-│   ├── git clone https://github.com/vijay2git/smart_public_complaint-resolver.git
-│   └── cd smart_public_complaint-resolver                                    │
-│                                                                             │
-│   📦 INSTALL                                                                │
-│   └── npm install                                                           │
-│                                                                             │
-│   ⚙️ CONFIGURE                                                              │
-│   ├── cp .env.local.example .env.local                                      │
-│   └── nano .env.local  # Add your API keys                                  │
-│                                                                             │
-│   🚀 RUN                                                                    │
-│   └── npm run dev                                                           │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+# Clone
+git clone https://github.com/vijay2git/smart_public_complaint-resolver.git
+cd smart_public_complaint-resolver
+
+# Install
+npm install
+
+# Configure
+cp .env.local.example .env.local
+# Edit .env.local with your API keys
+
+# Run
+npm run dev
 ```
 
-### 🔑 Environment Variables
+Open [http://localhost:3000](http://localhost:3000)
+
+---
+
+## Environment Variables
 
 ```env
-┌─────────────────────────────────────────────────────────────────────────────┐
-│  📄 .env.local                                                              │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  # 🗄️ Supabase (Database)                                                  │
-│  NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co                        │
-│  NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...                               │
-│                                                                             │
-│  # 🤖 OpenAI (AI Brain)                                                    │
-│  OPENAI_API_KEY=sk-xxxxx                                                   │
-│                                                                             │
-│  # 📧 Resend (Email Service)                                               │
-│  RESEND_API_KEY=re_xxxxx                                                   │
-│                                                                             │
-│  # 📱 Twilio (SMS Service)                                                 │
-│  TWILIO_ACCOUNT_SID=ACxxxxx                                                │
-│  TWILIO_AUTH_TOKEN=your_token                                              │
-│  TWILIO_PHONE_NUMBER=+1234567890                                           │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+
+# OpenAI
+OPENAI_API_KEY=
+
+# Resend
+RESEND_API_KEY=
+
+# Twilio
+TWILIO_ACCOUNT_SID=
+TWILIO_AUTH_TOKEN=
+TWILIO_PHONE_NUMBER=
 ```
 
 ---
 
-# ╔════════════════════════════════════════════════════════════════╗
-# ║              📡 **API ENDPOINTS** 📡                           ║
-# ╚════════════════════════════════════════════════════════════════╝
+## Project Structure
 
 ```
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                                                                              ║
-║  📋 COMPLAINTS API                                                           ║
-║  ┌────────┬─────────────────────────┬────────────────────────────────────┐  ║
-║  │ METHOD │ ENDPOINT                │ DESCRIPTION                        │  ║
-║  ├────────┼─────────────────────────┼────────────────────────────────────┤  ║
-║  │ GET    │ /api/complaints         │ 📋 Fetch all complaints            │  ║
-║  │ POST   │ /api/complaints         │ ✍️ Submit new complaint            │  ║
-║  │ GET    │ /api/complaints/[id]    │ 🔍 Get single complaint            │  ║
-║  │ PATCH  │ /api/complaints/[id]    │ ✏️ Update complaint                │  ║
-║  │ DELETE │ /api/complaints/[id]    │ 🗑️ Delete complaint                │  ║
-║  └────────┴─────────────────────────┴────────────────────────────────────┘  ║
-║                                                                              ║
-║  🤖 AI ANALYSIS API                                                          ║
-║  ┌────────┬─────────────────────────┬────────────────────────────────────┐  ║
-║  │ METHOD │ ENDPOINT                │ DESCRIPTION                        │  ║
-║  ├────────┼─────────────────────────┼────────────────────────────────────┤  ║
-║  │ POST   │ /api/ai/analyze         │ 🧠 Full AI analysis                │  ║
-║  │ POST   │ /api/ai/classify        │ 🏷️ Categorize issue                │  ║
-║  │ POST   │ /api/ai/severity        │ 📊 Calculate severity              │  ║
-║  └────────┴─────────────────────────┴────────────────────────────────────┘  ║
-║                                                                              ║
-║  📢 NOTIFICATIONS API                                                        ║
-║  ┌────────┬─────────────────────────┬────────────────────────────────────┐  ║
-║  │ METHOD │ ENDPOINT                │ DESCRIPTION                        │  ║
-║  ├────────┼─────────────────────────┼────────────────────────────────────┤  ║
-║  │ POST   │ /api/emails/send        │ 📧 Send email notification         │  ║
-║  │ POST   │ /api/notifications/sms  │ 📱 Send SMS notification           │  ║
-║  └────────┴─────────────────────────┴────────────────────────────────────┘  ║
-║                                                                              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+src/
+├── app/
+│   ├── admin/          # Admin dashboard
+│   ├── api/            # API routes
+│   │   ├── ai/         # AI endpoints
+│   │   ├── complaints/ # Complaint CRUD
+│   │   └── notifications/
+│   └── complaint/      # Citizen pages
+├── components/         # UI components
+├── lib/                # Utilities
+└── types/              # TypeScript types
 ```
 
 ---
 
-# ╔════════════════════════════════════════════════════════════════╗
-# ║              🤝 **CONTRIBUTING** 🤝                            ║
-# ╚════════════════════════════════════════════════════════════════╝
+## API Endpoints
 
-```
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                                                                              ║
-║                          🌟 JOIN OUR COMMUNITY 🌟                            ║
-║                                                                              ║
-║   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐  ║
-║   │             │    │             │    │             │    │             │  ║
-║   │   🍴 FORK   │───▶│  🌿 BRANCH  │───▶│  💻 CODE    │───▶│  📤 PUSH    │  ║
-║   │             │    │             │    │             │    │             │  ║
-║   └─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘  ║
-║          │                  │                  │                  │         ║
-║          ▼                  ▼                  ▼                  ▼         ║
-║   Fork on GitHub    git checkout        Make changes      git push          ║
-║                     -b feature-x        & test            origin feature-x  ║
-║                                                                              ║
-║                                        ⬇️                                    ║
-║                                                                              ║
-║                          ┌─────────────────────┐                             ║
-║                          │                     │                             ║
-║                          │   🎉 PULL REQUEST   │                             ║
-║                          │                     │                             ║
-║                          │   Open PR &         │                             ║
-║                          │   describe changes  │                             ║
-║                          │                     │                             ║
-║                          └─────────────────────┘                             ║
-║                                                                              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/complaints` | List complaints |
+| POST | `/api/complaints` | Submit complaint |
+| POST | `/api/ai/analyze` | AI analysis |
+| POST | `/api/emails/send` | Send email |
+| POST | `/api/notifications/sms` | Send SMS |
+
+---
+
+## Scripts
+
+```bash
+npm run dev        # Development server
+npm run build      # Production build
+npm run lint       # Lint code
+npm run typecheck  # Type checking
 ```
 
 ---
 
-# ╔════════════════════════════════════════════════════════════════╗
-# ║              📊 **STATS & BADGES** 📊                          ║
-# ╚════════════════════════════════════════════════════════════════╝
+## Contributing
+
+1. Fork the repo
+2. Create a branch (`git checkout -b feature/your-feature`)
+3. Commit changes (`git commit -m 'Add feature'`)
+4. Push (`git push origin feature/your-feature`)
+5. Open a Pull Request
+
+---
+
+## License
+
+MIT
+
+---
 
 <div align="center">
 
-```
-╔══════════════════════════════════════════════════════════════════╗
-║                                                                  ║
-║   ⏱️ AVG RESOLUTION     📈 SATISFACTION     🎯 ISSUES RESOLVED   ║
-║                                                                  ║
-║       24 hours              98%                 10,000+          ║
-║                                                                  ║
-║   🏛️ DEPARTMENTS        👥 ACTIVE USERS      🌍 CITIES          ║
-║                                                                  ║
-║       150+                 50,000+               25+             ║
-║                                                                  ║
-╚══════════════════════════════════════════════════════════════════╝
-```
+**Built with care for better communities**
 
-<img src="https://github-readme-stats.vercel.app/api?username=vijay2git&show_icons=true&theme=tokyonight&hide_border=true" alt="GitHub Stats"/>
-
-<img src="https://github-readme-streak-stats.herokuapp.com/?user=vijay2git&theme=tokyonight&hide_border=true" alt="GitHub Streak"/>
-
-</div>
-
----
-
-# ╔════════════════════════════════════════════════════════════════╗
-# ║              📜 **LICENSE** 📜                                 ║
-# ╚════════════════════════════════════════════════════════════════╝
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                                                                             │
-│                        📜 MIT LICENSE 📜                                     │
-│                                                                             │
-│   ✅ Free to use                                                           │
-│   ✅ Free to modify                                                        │
-│   ✅ Free to distribute                                                    │
-│   ✅ Free for commercial use                                               │
-│                                                                             │
-│   Just keep the license notice! 🎉                                          │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-# ╔════════════════════════════════════════════════════════════════╗
-# ║              ❤️ **THANK YOU** ❤️                               ║
-# ╚════════════════════════════════════════════════════════════════╝
-
-<div align="center">
-
-```
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                                                                              ║
-║                    🙏 THANKS TO THESE AMAZING PROJECTS 🙏                    ║
-║                                                                              ║
-║   ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐      ║
-║   │ Next.js  │  │ Supabase │  │ OpenAI   │  │ Tailwind │  │  Framer  │      ║
-║   │   ⚡     │  │   🗄️     │  │   🤖     │  │   🎨     │  │   ✨     │      ║
-║   └──────────┘  └──────────┘  └──────────┘  └──────────┘  └──────────┘      ║
-║                                                                              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-```
-
-### ⭐ Star this repo if you love it! ⭐
-
-```
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                                                                              ║
-║     ████████████████████████████████████████████████████████████████████     ║
-║     █                                                                  █     ║
-║     █    Made with ❤️ for better communities around the world          █     ║
-║     █                                                                  █     ║
-║     ████████████████████████████████████████████████████████████████████     ║
-║                                                                              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-```
-
-[🔝 Back to Top](#⚡🤖-smart-public-complaint-resolver🤖⚡)
+[⬆ Back to top](#smart-public-complaint-resolver)
 
 </div>
