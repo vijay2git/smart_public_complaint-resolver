@@ -15,6 +15,7 @@ export async function POST(request: Request) {
       location, 
       images, 
       voiceTranscription,
+      contact, // Contact info: { fullName, email, phone }
       userId 
     } = body;
 
@@ -22,6 +23,14 @@ export async function POST(request: Request) {
     if (!title || !description) {
       return NextResponse.json(
         { success: false, error: 'Missing required fields (title, description)' },
+        { status: 400 }
+      );
+    }
+
+    // Validate contact info
+    if (!contact?.email) {
+      return NextResponse.json(
+        { success: false, error: 'Email address is required for notifications' },
         { status: 400 }
       );
     }
@@ -55,7 +64,7 @@ export async function POST(request: Request) {
     const severityScore = severityScores[category] || 0.5;
     const priorityScore = Math.round(severityScore * multiplier * 100);
 
-    // Create mock complaint
+    // Create mock complaint with contact info
     const complaintId = generateId();
     const complaint = {
       id: complaintId,
@@ -68,6 +77,11 @@ export async function POST(request: Request) {
       priority_score: Math.min(priorityScore, 100),
       status: 'pending',
       location,
+      contact: {
+        fullName: contact?.fullName || 'Anonymous',
+        email: contact?.email,
+        phone: contact?.phone || null,
+      },
       images: images || [],
       voice_transcription: voiceTranscription,
       ai_classification: {
@@ -85,13 +99,13 @@ export async function POST(request: Request) {
     try {
       registerComplaintEmails({
         complaintId,
-        citizenName: userId || 'Citizen',
-        citizenEmail: `${userId || 'citizen'}@example.com`, // In production, get from user auth
+        citizenName: contact?.fullName || 'Citizen',
+        citizenEmail: contact?.email || `${userId || 'citizen'}@example.com`,
         title,
         description,
         category: category || 'other',
       });
-      console.log(`[EMAIL] Registered complaint ${complaintId} for email notifications`);
+      console.log(`[EMAIL] Registered complaint ${complaintId} for email notifications to ${contact?.email}`);
     } catch (emailError) {
       console.error('[EMAIL] Failed to register emails:', emailError);
       // Don't fail the complaint creation if email registration fails

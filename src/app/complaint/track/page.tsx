@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -31,6 +31,7 @@ interface Complaint {
   created_at: string;
   updated_at: string;
   location?: { latitude: number; longitude: number; address?: string };
+  contact?: { fullName: string; email: string; phone?: string };
   ai_classification?: { category: string; confidence: number; keywords: string[] };
 }
 
@@ -81,7 +82,8 @@ function generateComplaintData(id: string): Complaint {
   };
 }
 
-export default function TrackComplaint() {
+// Inner component that uses useSearchParams - must be wrapped in Suspense
+function TrackComplaintContent() {
   const searchParams = useSearchParams();
   const complaintId = searchParams.get('id');
   const successMessage = searchParams.get('success');
@@ -402,5 +404,24 @@ export default function TrackComplaint() {
         </AnimatePresence>
       </div>
     </div>
+  );
+}
+
+// Loading fallback for Suspense
+function TrackComplaintLoading() {
+  return (
+    <div className="min-h-screen bg-[#0A0A0A] relative flex items-center justify-center">
+      <div className="blue-glow-bottom" />
+      <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+    </div>
+  );
+}
+
+// Main export with Suspense boundary
+export default function TrackComplaint() {
+  return (
+    <Suspense fallback={<TrackComplaintLoading />}>
+      <TrackComplaintContent />
+    </Suspense>
   );
 }

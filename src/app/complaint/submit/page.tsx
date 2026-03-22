@@ -19,7 +19,10 @@ import {
   ChevronRight,
   ChevronLeft,
   FileText,
-  StopCircle
+  StopCircle,
+  User,
+  Mail,
+  Phone
 } from 'lucide-react';
 
 const categories = [
@@ -35,10 +38,11 @@ const categories = [
 ];
 
 const steps = [
-  { id: 1, title: 'Details' },
-  { id: 2, title: 'Category' },
-  { id: 3, title: 'Media' },
-  { id: 4, title: 'Review' },
+  { id: 1, title: 'Contact' },
+  { id: 2, title: 'Details' },
+  { id: 3, title: 'Category' },
+  { id: 4, title: 'Media' },
+  { id: 5, title: 'Review' },
 ];
 
 export default function SubmitComplaint() {
@@ -47,6 +51,12 @@ export default function SubmitComplaint() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   
+  // Contact information
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  
+  // Complaint details
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('other');
@@ -134,11 +144,11 @@ export default function SubmitComplaint() {
       if (result.success) {
         setAiAnalysis(result.data.classification);
         if (result.data.duplicates?.isDuplicate) setDuplicateWarning(result.data.duplicates);
-        setCurrentStep(4);
+        setCurrentStep(5);
       }
     } catch (error) {
       setAiAnalysis({ category: selectedCategory || 'other', severity: 'medium', confidence: 0.85 });
-      setCurrentStep(4);
+      setCurrentStep(5);
     } finally {
       setIsAnalyzing(false);
     }
@@ -147,8 +157,11 @@ export default function SubmitComplaint() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!title || title.length < 10) { alert('Title must be at least 10 characters.'); setCurrentStep(1); return; }
-    if (!description || description.length < 50) { alert('Description must be at least 50 characters.'); setCurrentStep(1); return; }
+    // Validate all fields
+    if (!fullName || fullName.trim().length < 2) { alert('Please enter your full name.'); setCurrentStep(1); return; }
+    if (!email || !email.includes('@')) { alert('Please enter a valid email address.'); setCurrentStep(1); return; }
+    if (!title || title.length < 10) { alert('Title must be at least 10 characters.'); setCurrentStep(2); return; }
+    if (!description || description.length < 50) { alert('Description must be at least 50 characters.'); setCurrentStep(2); return; }
 
     setIsSubmitting(true);
     
@@ -170,7 +183,7 @@ export default function SubmitComplaint() {
     
     const categoryData = severityMap[selectedCategory] || severityMap.other;
     
-    // Create complaint object
+    // Create complaint object with contact info
     const newComplaint = {
       id: complaintId,
       title,
@@ -182,6 +195,11 @@ export default function SubmitComplaint() {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       location: location || undefined,
+      contact: {
+        fullName,
+        email,
+        phone: phone || undefined,
+      },
       ai_classification: {
         category: selectedCategory,
         confidence: 0.85,
@@ -192,6 +210,27 @@ export default function SubmitComplaint() {
     // Store complaint for tracking
     storeComplaint(newComplaint);
     
+    // Send email notification (simulated in demo mode)
+    try {
+      await fetch('/api/emails', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'register',
+          data: {
+            complaintId,
+            citizenName: fullName,
+            citizenEmail: email,
+            title,
+            description,
+            category: selectedCategory,
+          },
+        }),
+      });
+    } catch (emailError) {
+      console.error('Email registration failed:', emailError);
+    }
+    
     // Navigate to tracking page
     router.push(`/complaint/track?id=${complaintId}&success=true`);
     
@@ -199,11 +238,17 @@ export default function SubmitComplaint() {
   };
 
   const nextStep = () => {
+    // Step 1 validation: Contact info
     if (currentStep === 1) {
+      if (!fullName || fullName.trim().length < 2) { alert('Please enter your full name.'); return; }
+      if (!email || !email.includes('@')) { alert('Please enter a valid email address.'); return; }
+    }
+    // Step 2 validation: Details
+    if (currentStep === 2) {
       if (!title || title.length < 10) { alert('Title must be at least 10 characters.'); return; }
       if (!description || description.length < 50) { alert('Description must be at least 50 characters.'); return; }
     }
-    if (currentStep < 4) setCurrentStep(currentStep + 1);
+    if (currentStep < 5) setCurrentStep(currentStep + 1);
   };
 
   return (
@@ -262,10 +307,86 @@ export default function SubmitComplaint() {
 
         <form onSubmit={onSubmit}>
           <AnimatePresence mode="wait">
-            {/* Step 1: Details */}
+            {/* Step 1: Contact Information */}
             {currentStep === 1 && (
               <motion.div
                 key="step1"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+              >
+                <div className="glass-card p-8">
+                  <div className="flex items-center space-x-4 mb-8">
+                    <div className="w-12 h-12 border border-blue-500/30 rounded flex items-center justify-center">
+                      <User className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl text-white" style={{ fontFamily: 'Playfair Display, serif' }}>Contact Information</h2>
+                      <p className="text-sm text-gray-500">We'll use this to send you updates about your complaint</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-xs tracking-[0.1em] text-gray-400 uppercase mb-3">
+                        <span className="flex items-center">
+                          <User className="w-3 h-3 mr-2" />
+                          Full Name *
+                        </span>
+                      </label>
+                      <input
+                        type="text"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        className="glass-input"
+                        placeholder="Enter your full name"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs tracking-[0.1em] text-gray-400 uppercase mb-3">
+                        <span className="flex items-center">
+                          <Mail className="w-3 h-3 mr-2" />
+                          Email Address *
+                        </span>
+                      </label>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="glass-input"
+                        placeholder="your.email@example.com"
+                        required
+                      />
+                      <p className="text-gray-600 text-xs mt-2">We'll send complaint status updates to this email</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs tracking-[0.1em] text-gray-400 uppercase mb-3">
+                        <span className="flex items-center">
+                          <Phone className="w-3 h-3 mr-2" />
+                          Phone Number <span className="text-gray-600">(optional)</span>
+                        </span>
+                      </label>
+                      <input
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="glass-input"
+                        placeholder="+1 (555) 123-4567"
+                      />
+                      <p className="text-gray-600 text-xs mt-2">For urgent SMS notifications about your complaint</p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Step 2: Details */}
+            {currentStep === 2 && (
+              <motion.div
+                key="step2"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
@@ -320,10 +441,10 @@ export default function SubmitComplaint() {
               </motion.div>
             )}
 
-            {/* Step 2: Category */}
-            {currentStep === 2 && (
+            {/* Step 3: Category */}
+            {currentStep === 3 && (
               <motion.div
-                key="step2"
+                key="step3"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
@@ -373,10 +494,10 @@ export default function SubmitComplaint() {
               </motion.div>
             )}
 
-            {/* Step 3: Media */}
-            {currentStep === 3 && (
+            {/* Step 4: Media */}
+            {currentStep === 4 && (
               <motion.div
-                key="step3"
+                key="step4"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
@@ -470,10 +591,10 @@ export default function SubmitComplaint() {
               </motion.div>
             )}
 
-            {/* Step 4: Review */}
-            {currentStep === 4 && (
+            {/* Step 5: Review */}
+            {currentStep === 5 && (
               <motion.div
-                key="step4"
+                key="step5"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
@@ -491,6 +612,27 @@ export default function SubmitComplaint() {
                   </div>
 
                   <div className="space-y-4">
+                    {/* Contact Info */}
+                    <div className="p-4 bg-white/[0.02] border border-white/5 rounded">
+                      <p className="text-xs text-gray-500 mb-2 tracking-wide uppercase">Contact Information</p>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-500">Name: </span>
+                          <span className="text-white">{fullName}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Email: </span>
+                          <span className="text-white">{email}</span>
+                        </div>
+                        {phone && (
+                          <div>
+                            <span className="text-gray-500">Phone: </span>
+                            <span className="text-white">{phone}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
                     <div className="p-4 bg-white/[0.02] border border-white/5 rounded">
                       <p className="text-xs text-gray-500 mb-1 tracking-wide uppercase">Title</p>
                       <p className="text-white">{title || 'Not provided'}</p>
@@ -565,7 +707,7 @@ export default function SubmitComplaint() {
             )}
 
             <div className="flex space-x-3">
-              {currentStep === 3 && (
+              {currentStep === 4 && (
                 <GlowButton 
                   variant="secondary" 
                   type="button"
@@ -586,7 +728,7 @@ export default function SubmitComplaint() {
                 </GlowButton>
               )}
 
-              {currentStep < 4 ? (
+              {currentStep < 5 ? (
                 <GlowButton onClick={nextStep} type="button">
                   <span className="flex items-center space-x-2">
                     <span>Continue</span>

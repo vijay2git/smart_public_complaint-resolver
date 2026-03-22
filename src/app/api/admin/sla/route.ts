@@ -1,9 +1,21 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase';
 
 // POST: Check and escalate complaints that have exceeded SLA
 export async function POST(request: Request) {
   try {
+    // Check if Supabase is configured
+    if (!isSupabaseConfigured()) {
+      return NextResponse.json({
+        success: true,
+        data: {
+          escalated: 0,
+          updated: 0,
+          message: 'SLA check skipped - Supabase not configured (demo mode)',
+        },
+      });
+    }
+
     const body = await request.json();
     const { action } = body;
 
@@ -34,7 +46,7 @@ async function checkSLACompliance() {
     const slaThreshold = new Date(Date.now() - slaHours * 60 * 60 * 1000);
 
     // Find pending complaints older than SLA threshold
-    const { data: overdueComplaints, error } = await supabaseAdmin
+    const { data: overdueComplaints, error } = await supabaseAdmin!
       .from('complaints')
       .select(`
         id,
@@ -64,7 +76,7 @@ async function checkSLACompliance() {
 
     for (const complaint of overdueComplaints) {
       // Update status to escalated
-      await supabaseAdmin
+      await supabaseAdmin!
         .from('complaints')
         .update({
           status: 'escalated',
@@ -73,7 +85,7 @@ async function checkSLACompliance() {
         .eq('id', complaint.id);
 
       // Create status history entry
-      await supabaseAdmin
+      await supabaseAdmin!
         .from('status_history')
         .insert({
           complaint_id: complaint.id,
@@ -84,7 +96,7 @@ async function checkSLACompliance() {
         });
 
       // Create notification for the user
-      await supabaseAdmin
+      await supabaseAdmin!
         .from('notifications')
         .insert({
           complaint_id: complaint.id,
@@ -115,7 +127,7 @@ async function checkSLACompliance() {
 async function recalculatePriorities() {
   try {
     // Get all active complaints
-    const { data: complaints, error } = await supabaseAdmin
+    const { data: complaints, error } = await supabaseAdmin!
       .from('complaints')
       .select('id, ai_severity_score, created_at, category, status')
       .in('status', ['pending', 'in_progress']);
@@ -168,7 +180,7 @@ async function recalculatePriorities() {
       const priorityScore = Math.round(Math.min(Math.max(score * 100, 0), 100));
 
       // Update priority score
-      await supabaseAdmin
+      await supabaseAdmin!
         .from('complaints')
         .update({ priority_score: priorityScore })
         .eq('id', complaint.id);
@@ -200,6 +212,7 @@ export async function GET() {
       data: {
         slaHours,
         nextCheck: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // Next hour
+        configured: isSupabaseConfigured(),
       },
     });
   } catch (error) {

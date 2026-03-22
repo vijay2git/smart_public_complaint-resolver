@@ -1,9 +1,17 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase';
 
 // PATCH: Update complaint status
 export async function PATCH(request: Request) {
   try {
+    // Check if Supabase is configured
+    if (!isSupabaseConfigured()) {
+      return NextResponse.json({
+        success: true,
+        message: 'Status update simulated - Supabase not configured (demo mode)',
+      });
+    }
+
     const body = await request.json();
     const { complaintId, status, adminId, notes } = body;
 
@@ -15,7 +23,7 @@ export async function PATCH(request: Request) {
     }
 
     // Get current complaint
-    const { data: currentComplaint, error: fetchError } = await supabaseAdmin
+    const { data: currentComplaint, error: fetchError } = await supabaseAdmin!
       .from('complaints')
       .select('status')
       .eq('id', complaintId)
@@ -37,7 +45,7 @@ export async function PATCH(request: Request) {
       updateData.escalated_at = new Date().toISOString();
     }
 
-    const { error: updateError } = await supabaseAdmin
+    const { error: updateError } = await supabaseAdmin!
       .from('complaints')
       .update(updateData)
       .eq('id', complaintId);
@@ -47,7 +55,7 @@ export async function PATCH(request: Request) {
     }
 
     // Create status history entry
-    await supabaseAdmin
+    await supabaseAdmin!
       .from('status_history')
       .insert({
         complaint_id: complaintId,
@@ -58,14 +66,14 @@ export async function PATCH(request: Request) {
       });
 
     // Create notification for the user
-    const { data: complaint } = await supabaseAdmin
+    const { data: complaint } = await supabaseAdmin!
       .from('complaints')
       .select('user_id, title')
       .eq('id', complaintId)
       .single();
 
     if (complaint) {
-      await supabaseAdmin
+      await supabaseAdmin!
         .from('notifications')
         .insert({
           complaint_id: complaintId,
@@ -92,7 +100,25 @@ export async function PATCH(request: Request) {
 // GET: Get complaint statistics
 export async function GET() {
   try {
-    const { data: complaints, error } = await supabaseAdmin
+    // Check if Supabase is configured
+    if (!isSupabaseConfigured()) {
+      return NextResponse.json({
+        success: true,
+        data: {
+          total: 0,
+          pending: 0,
+          inProgress: 0,
+          escalated: 0,
+          resolved: 0,
+          highPriority: 0,
+          avgResolutionTime: 0,
+          configured: false,
+        },
+        message: 'Statistics not available - Supabase not configured (demo mode)',
+      });
+    }
+
+    const { data: complaints, error } = await supabaseAdmin!
       .from('complaints')
       .select('status, priority_score, created_at, resolved_at');
 

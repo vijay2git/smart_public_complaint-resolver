@@ -1,13 +1,14 @@
 import { Resend } from 'resend';
-import Twilio from 'twilio';
 
-// Initialize email client
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize email client lazily
+let resend: Resend | null = null;
 
-// Initialize SMS client
-const twilioClient = process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN
-  ? Twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
-  : null;
+const getResendClient = () => {
+  if (!resend && process.env.RESEND_API_KEY) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resend;
+};
 
 // Email templates
 export const emailTemplates = {
@@ -183,14 +184,15 @@ export async function sendEmail(
   data: any
 ): Promise<boolean> {
   try {
-    if (!process.env.RESEND_API_KEY) {
+    const resendClient = getResendClient();
+    if (!resendClient) {
       console.warn('RESEND_API_KEY not configured, skipping email');
       return false;
     }
 
     const emailContent = emailTemplates[template](data);
     
-    await resend.emails.send({
+    await resendClient.emails.send({
       from: 'Smart Complaint Resolver <noreply@complaintresolver.com>',
       to,
       subject: emailContent.subject,
@@ -204,23 +206,50 @@ export async function sendEmail(
   }
 }
 
-// Send SMS notification
+// Free SMS via Verizon Email-to-SMS Gateway (vtext.com)
+const VERIZON_GATEWAY = 'vtext.com';
+
+// Convert phone to Verizon SMS email
+function phoneToSmsEmail(phone: string): string {
+  // Remove all non-digits
+  const digits = phone.replace(/\D/g, '');
+  
+  // Format: 1234567890@vtext.com
+  return `${digits}@${VERIZON_GATEWAY}`;
+}
+
+// Send SMS notification via Verizon (Free!)
 export async function sendSMS(
   to: string,
   message: string
 ): Promise<boolean> {
   try {
-    if (!twilioClient || !process.env.TWILIO_PHONE_NUMBER) {
-      console.warn('Twilio not configured, skipping SMS');
+    if (!to || to.length < 10) {
+      console.warn('Invalid phone number, skipping SMS');
       return false;
     }
 
-    await twilioClient.messages.create({
-      body: message,
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to,
+    // Convert phone to Verizon SMS email
+    const smsEmail = phoneToSmsEmail(to);
+    
+    console.log(`[SMS] Sending via Verizon gateway: ${smsEmail}`);
+    
+    // Use Resend to send SMS via email gateway
+    const resendClient = getResendClient();
+    if (!resendClient) {
+      console.warn('Resend not configured, SMS would be sent to:', smsEmail);
+      console.log(`[SMS] Message: ${message}`);
+      return false;
+    }
+
+    await resendClient.emails.send({
+      from: 'ComplaintResolver <noreply@complaintresolver.com>',
+      to: smsEmail,
+      subject: '', // SMS has no subject
+      text: message,
     });
 
+    console.log(`[SMS] Successfully sent to ${smsEmail}`);
     return true;
   } catch (error) {
     console.error('SMS send error:', error);

@@ -1,10 +1,22 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase';
 import { sendEmail, sendSMS, processNotifications } from '@/lib/notifications';
 
 // POST: Send notifications
 export async function POST(request: Request) {
   try {
+    // Check if Supabase is configured
+    if (!isSupabaseConfigured()) {
+      return NextResponse.json({
+        success: true,
+        data: {
+          emailSent: false,
+          smsSent: false,
+          message: 'Notifications skipped - Supabase not configured (demo mode)',
+        },
+      });
+    }
+
     const body = await request.json();
     const { action, data } = body;
 
@@ -39,13 +51,13 @@ export async function POST(request: Request) {
         const { complaintId, userId, oldStatus, newStatus, notes } = data;
 
         // Get user and complaint details
-        const { data: user } = await supabaseAdmin
+        const { data: user } = await supabaseAdmin!
           .from('users')
           .select('email, phone, full_name')
           .eq('id', userId)
           .single();
 
-        const { data: complaint } = await supabaseAdmin
+        const { data: complaint } = await supabaseAdmin!
           .from('complaints')
           .select('title, category')
           .eq('id', complaintId)
@@ -79,7 +91,7 @@ export async function POST(request: Request) {
         }
 
         // Update notification records
-        await supabaseAdmin
+        await supabaseAdmin!
           .from('notifications')
           .update({
             status: 'sent',
@@ -116,11 +128,20 @@ export async function POST(request: Request) {
 // GET: Get notification history
 export async function GET(request: Request) {
   try {
+    // Check if Supabase is configured
+    if (!isSupabaseConfigured()) {
+      return NextResponse.json({
+        success: true,
+        data: [],
+        message: 'Notifications not available - Supabase not configured (demo mode)',
+      });
+    }
+
     const { searchParams } = new URL(request.url);
     const complaintId = searchParams.get('complaintId');
     const userId = searchParams.get('userId');
 
-    let query = supabaseAdmin
+    let query = supabaseAdmin!
       .from('notifications')
       .select(`
         *,

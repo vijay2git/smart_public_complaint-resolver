@@ -188,6 +188,16 @@ export async function detectDuplicates(
     // Generate embedding for the complaint text
     const embedding = await generateEmbedding(`${title} ${description}`);
     
+    // Check if Supabase is configured
+    if (!supabaseAdmin) {
+      return {
+        isDuplicate: false,
+        similarityScore: 0,
+        similarComplaints: [],
+        reasoning: 'Supabase not configured - duplicate detection unavailable',
+      };
+    }
+
     // Search for similar complaints in the database
     const { data: similarComplaints, error } = await supabaseAdmin
       .rpc('find_similar_complaints', {
